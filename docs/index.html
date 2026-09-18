@@ -10,7 +10,7 @@
 <meta property="og:title" content="pixelpicker — dependency-free color picker">
 <meta property="og:description" content="A dependency-free color picker for text inputs. The panel is a helper, never a replacement for the input field.">
 <meta property="og:url" content="https://mattopen.github.io/pixelpicker/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%234361ee'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%23a0522d'/></svg>">
 <link rel="stylesheet" href="assets/pixelpicker.css">
 <style>
   :root {
@@ -25,32 +25,11 @@
 
     /* Die Palette traegt Hero, Bubbles und Akzente -- bei einem Colorpicker
        ist Farbe kein Schmuck, sondern das Thema selbst. Vier Stimmungen
-       stehen zur Wahl, der Schalter unten rechts wechselt sie. */
-    --pop-pink: #f72585;
-    --pop-yellow: #ffbe0b;
-    --pop-green: #4cc9f0;
-    --pop-blue: #4361ee;
-    --pop-orange: #fb5607;
-    --pop-cyan: #b5179e;
-    --pop-violet: #7209b7;
-    --pop-deep: #3a0ca3;
+       stehen zur Wahl, der Schalter unten rechts wechselt sie.
 
-    --hero-1: #ffe9f3;
-    --hero-2: #fff1d6;
-    --hero-3: #ebe6ff;
-    --hero-base: #fffdfb;
-    --title-gradient: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
-    --cta-gradient: linear-gradient(135deg, #4361ee, #7209b7);
-    --cta-ink: #fff;
-    --cta-shadow: 67 97 238;
-  }
-
-  /* --- Die anderen drei Stimmungen ---------------------------------------
-     Jede setzt dieselben Variablen neu; alles Uebrige liest nur daraus. */
-
-  /* Gebrochene Warmtoene: Terrakotta, Karamell, Schokolade. Satt statt
-     grell -- Farben, die eine Oberflaeche zu haben scheinen. */
-  :root[data-palette='earth'] {
+       Standard ist 'earth': gebrochene Warmtoene, Terrakotta und
+       Schokolade. Sie wirken wertiger als reine Buntwerte und heben die
+       Seite von der ueblichen Bibliotheksoptik ab (Matt, 2026-09-18). */
     --pop-pink: #c65d3b;
     --pop-yellow: #c88a4b;
     --pop-green: #87a878;
@@ -69,6 +48,31 @@
     --cta-gradient: linear-gradient(135deg, #a0522d, #6f4e37);
     --cta-ink: #fff;
     --cta-shadow: 160 82 45;
+  }
+
+  /* --- Die anderen drei Stimmungen ---------------------------------------
+     Jede setzt dieselben Variablen neu; alles Uebrige liest nur daraus. */
+
+  /* Die knallige: Indigo bis Magenta. */
+  :root[data-palette='vivid'] {
+    --pop-pink: #f72585;
+    --pop-yellow: #ffbe0b;
+    --pop-green: #4cc9f0;
+    --pop-blue: #4361ee;
+    --pop-orange: #fb5607;
+    --pop-cyan: #b5179e;
+    --pop-violet: #7209b7;
+    --pop-deep: #3a0ca3;
+    --accent: #4361ee;
+
+    --hero-1: #ffe9f3;
+    --hero-2: #fff1d6;
+    --hero-3: #ebe6ff;
+    --hero-base: #fffdfb;
+    --title-gradient: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
+    --cta-gradient: linear-gradient(135deg, #4361ee, #7209b7);
+    --cta-ink: #fff;
+    --cta-shadow: 67 97 238;
   }
 
   /* Tief und edel: Petrol, Smaragd, Aubergine. Dunklere Buntwerte, die
@@ -810,10 +814,10 @@
 <body>
 
 <div class="palette-switch" role="group" aria-label="Color theme">
-  <button type="button" data-palette="" aria-pressed="true" title="Vivid"
-          style="--swatch:linear-gradient(135deg,#4361ee,#f72585)"></button>
-  <button type="button" data-palette="earth" aria-pressed="false" title="Earth"
+  <button type="button" data-palette="" aria-pressed="true" title="Earth"
           style="--swatch:linear-gradient(135deg,#6f4e37,#c88a4b)"></button>
+  <button type="button" data-palette="vivid" aria-pressed="false" title="Vivid"
+          style="--swatch:linear-gradient(135deg,#4361ee,#f72585)"></button>
   <button type="button" data-palette="jewel" aria-pressed="false" title="Jewel"
           style="--swatch:linear-gradient(135deg,#1d3557,#0f7b6c)"></button>
   <button type="button" data-palette="shell" aria-pressed="false" title="Shell"
@@ -902,7 +906,7 @@
       </div>
     </div>
     <div class="card__demo">
-      <input type="text" class="demo-thumb" data-pp-thumb="bar" value="#4361ee">
+      <input type="text" class="demo-thumb" data-pp-thumb="bar" value="#6f4e37">
     </div>
   </div>
   <div class="card card--tinted">
@@ -915,7 +919,7 @@
       </div>
     </div>
     <div class="card__demo">
-      <input type="text" class="demo-thumb" data-pp-thumb="circle" value="#06d6a0">
+      <input type="text" class="demo-thumb" data-pp-thumb="circle" value="#87a878">
     </div>
   </div>
   <div class="card card--tinted">
@@ -928,7 +932,7 @@
       </div>
     </div>
     <div class="card__demo">
-      <input type="text" class="demo-thumb" data-pp-thumb="square" value="#ffbe0b">
+      <input type="text" class="demo-thumb" data-pp-thumb="square" value="#c88a4b">
     </div>
   </div>
   <div class="card card--tinted">
@@ -937,7 +941,7 @@
       <p>The color covers the field completely — the value is hidden. For fields where the color <em>is</em> the display.</p>
     </div>
     <div class="card__demo">
-      <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#fb5607">
+      <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#a0522d">
     </div>
   </div>
   <div class="card card--tinted">
@@ -946,7 +950,7 @@
       <p>The color fills the field <em>behind</em> the text, so the value stays readable.</p>
     </div>
     <div class="card__demo">
-      <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#4cc9f0">
+      <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#c65d3b">
     </div>
   </div>
   <div class="card card--tinted">
@@ -955,7 +959,7 @@
       <p>No swatch at all — the input is left exactly as it was.</p>
     </div>
     <div class="card__demo">
-      <input type="text" class="demo-thumb" data-pp-thumb="none" value="#f72585">
+      <input type="text" class="demo-thumb" data-pp-thumb="none" value="#f4ede4">
     </div>
   </div>
 </div>
@@ -1424,12 +1428,31 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
   // --- Themenwechsler ------------------------------------------------------
   const paletteButtons = [...document.querySelectorAll('.palette-switch button')];
 
+  // Je Thema die sechs Farben der Demo-Felder, in der Reihenfolge der Karten.
+  // Sie wandern mit, damit die Karten nicht bunt bleiben, waehrend die Seite
+  // gedaempft ist -- die Karten zeigen ja gerade, wie eine Farbe wirkt.
+  const DEMO_COLORS = {
+    '': ['#6f4e37', '#87a878', '#c88a4b', '#a0522d', '#c65d3b', '#f4ede4'],
+    vivid: ['#4361ee', '#06d6a0', '#ffbe0b', '#fb5607', '#4cc9f0', '#f72585'],
+    jewel: ['#1d3557', '#0f7b6c', '#d4a017', '#9e2a2b', '#2a6f97', '#5b2c6f'],
+    shell: ['#6b705c', '#a3b18a', '#dda15e', '#d4a59a', '#9c89b8', '#f4ede4']
+  };
+
   const applyPalette = (name) => {
     if (name) document.documentElement.dataset.palette = name;
     else delete document.documentElement.dataset.palette;
 
     for (const btn of paletteButtons) {
       btn.setAttribute('aria-pressed', String((btn.dataset.palette || '') === name));
+    }
+
+    // Die Demo-Felder mitziehen. setValue laeuft ueber die Instanz, also
+    // faellt onInput, und die Kartenkoepfe faerben sich von selbst.
+    const colors = DEMO_COLORS[name];
+    if (colors) {
+      document.querySelectorAll('.demo-thumb').forEach((field, i) => {
+        PixelPicker.get(field)?.setValue(colors[i] ?? colors[0]);
+      });
     }
     try {
       localStorage.setItem('pp-palette', name);
@@ -1443,12 +1466,8 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
     btn.addEventListener('click', () => applyPalette(btn.dataset.palette || ''));
   }
 
-  try {
-    const saved = localStorage.getItem('pp-palette');
-    if (saved !== null) applyPalette(saved);
-  } catch {
-    // s. oben
-  }
+  // Die gespeicherte Wahl wird erst ganz unten wiederhergestellt, wenn die
+  // Picker stehen -- applyPalette setzt Werte ueber deren Instanzen.
 
   // --- Reiter und Aufsetzcode ----------------------------------------------
   const tabs = [...document.querySelectorAll('.tab')];
@@ -1644,6 +1663,16 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
   });
 
   PixelPicker.create(lifecycleField, { thumbStyle: 'square' });
+
+  // --- Zum Schluss: die gespeicherte Themenwahl ----------------------------
+  // Hier unten, weil applyPalette die Demo-Farben ueber die Picker-Instanzen
+  // setzt -- die muessen dafuer schon stehen.
+  try {
+    const saved = localStorage.getItem('pp-palette');
+    if (saved !== null && saved !== '') applyPalette(saved);
+  } catch {
+    // Privater Modus oder blockierter Speicher: Dann gilt das Standardthema.
+  }
 })();
 </script>
 </body>
