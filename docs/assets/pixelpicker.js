@@ -1,5 +1,5 @@
 /*!
- * pixelpicker v1.0.0 -- https://mattopen.github.io/pixelpicker/
+ * pixelpicker v1.1.0 -- https://mattopen.github.io/pixelpicker/
  * Copyright (c) 2026 pixelquadrat GmbH
  * Copyright (c) 2021 Mohammed Bassit -- derived from Coloris (MIT)
  * Licensed under the MIT License.
@@ -606,6 +606,9 @@ var PixelPicker = (() => {
       this.panel = null;
       this.wrapper = null;
       this.thumb = null;
+      this.createdWrapper = false;
+      this.addedFieldClass = false;
+      this.fieldObserver = null;
       this.listeners = [];
       this.destroyed = false;
       this.valueBeforeOpen = null;
@@ -619,21 +622,29 @@ var PixelPicker = (() => {
     /**
      * Wrapper und Farbfeld anlegen.
      *
-     * Das Feld bekommt einen Wrapper, damit das Farbfeld darin liegen kann. Der
-     * Wrapper traegt den Modifier, nicht das Feld -- so kann das Farbfeld ueber
-     * dem Feld liegen (fill-behind) oder darin (bar, circle, square).
+     * Das Farbfeld braucht einen Knoten, an dem es haengt -- der traegt den
+     * Modifier, nicht das Feld selbst. Dafuer kommt der vorhandene Elternknoten
+     * in Frage; nur wo der noch anderes enthaelt, wird einer eingezogen.
+     *
+     * Die Option wrap steuert das, siehe Issue #1: Markup, das auf direkter
+     * Eltern-Kind- oder Geschwisterbeziehung beruht (Bootstraps .form-floating
+     * erwartet Feld und Label als Geschwister), zerbricht an einem
+     * eingeschobenen Knoten.
      */
     #buildThumb() {
       const { thumbStyle } = this.options;
       if (thumbStyle === "none") return;
       const parent = this.field.parentNode;
       let wrapper = parent;
-      if (!parent.classList.contains("pp-field")) {
+      if (this.#needsWrapper(parent)) {
         wrapper = document.createElement("div");
-        wrapper.className = "pp-field";
+        wrapper.className = "pp-field pp-field--owned";
         parent.insertBefore(wrapper, this.field);
         wrapper.appendChild(this.field);
         this.createdWrapper = true;
+      } else if (!parent.classList.contains("pp-field")) {
+        parent.classList.add("pp-field");
+        this.addedFieldClass = true;
       }
       wrapper.classList.add(`pp-field--${thumbStyle}`);
       if (this.options.thumbPosition === "start") {
@@ -652,6 +663,63 @@ var PixelPicker = (() => {
       }
       this.wrapper = wrapper;
       this.thumb = thumb;
+      this.#trackFieldHeight();
+    }
+    /**
+     * Die Hoehe des Feldes als --pp-field-height fuehren.
+     *
+     * Prozentangaben am Farbfeld beziehen sich auf den Knoten, an dem es haengt
+     * -- und der ist nicht immer das Feld: Uebernimmt ein fremder Elternknoten
+     * die Rolle (wrap: false), bringt der eigene Polsterung mit und ist hoeher.
+     * Die Feldhoehe ist die einzige verlaessliche Bezugsgroesse, und CSS kann
+     * sie von dort aus nicht lesen.
+     *
+     * Der ResizeObserver haelt den Wert aktuell, damit er nicht nach dem ersten
+     * Umbruch oder einer Aenderung der Schriftgroesse veraltet.
+     */
+    #trackFieldHeight() {
+      const write = () => {
+        const field = this.field.getBoundingClientRect();
+        if (field.height <= 0) return;
+        const style = this.wrapper.style;
+        style.setProperty("--pp-field-height", `${field.height}px`);
+        if (this.createdWrapper) {
+          style.setProperty("--pp-field-offset-block", "0px");
+          style.setProperty("--pp-field-offset-inline", "0px");
+          style.setProperty("--pp-field-offset-start", "0px");
+          style.setProperty("--pp-field-width", `${field.width}px`);
+          return;
+        }
+        const host = this.wrapper.getBoundingClientRect();
+        const rtl = getComputedStyle(this.wrapper).direction === "rtl";
+        const left = field.left - host.left;
+        const right = host.right - field.right;
+        const inlineEnd = rtl ? left : right;
+        const inlineStart = rtl ? right : left;
+        style.setProperty("--pp-field-offset-block", `${field.top - host.top}px`);
+        style.setProperty("--pp-field-offset-inline", `${Math.max(inlineEnd, 0)}px`);
+        style.setProperty("--pp-field-width", `${field.width}px`);
+        style.setProperty("--pp-field-offset-start", `${Math.max(inlineStart, 0)}px`);
+      };
+      write();
+      if (typeof ResizeObserver === "undefined") return;
+      this.fieldObserver = new ResizeObserver(write);
+      this.fieldObserver.observe(this.field);
+    }
+    /**
+     * Braucht das Feld einen eigenen Wrapper?
+     *
+     * 'auto' entscheidet nach dem Inhalt des Elternknotens: Steht das Feld dort
+     * allein, kann der Knoten die Rolle uebernehmen. Enthaelt er mehr -- ein
+     * Label, eine Schaltflaeche, zwei Felder --, bekaeme das Farbfeld sonst
+     * einen Bezugsrahmen, der groesser ist als das Feld.
+     */
+    #needsWrapper(parent) {
+      const { wrap } = this.options;
+      if (parent.classList.contains("pp-field")) return false;
+      if (wrap === false) return false;
+      if (wrap === true) return true;
+      return Array.from(parent.children).some((child) => child !== this.field);
     }
     /** Farbe des Feldes in den Thumb uebernehmen. */
     #syncThumb() {
@@ -815,6 +883,8 @@ var PixelPicker = (() => {
       this.panel = null;
       this.listeners.forEach((off) => off());
       this.listeners = [];
+      this.fieldObserver?.disconnect();
+      this.fieldObserver = null;
       this.thumb?.remove();
       this.thumb = null;
       if (this.wrapper) {
@@ -823,9 +893,14 @@ var PixelPicker = (() => {
         this.wrapper.style.removeProperty("--pp-thumb-color");
         this.wrapper.style.removeProperty("--pp-thumb-contrast");
         this.wrapper.style.removeProperty("--pp-field-radius");
+        this.wrapper.style.removeProperty("--pp-field-height");
+        this.wrapper.style.removeProperty("--pp-field-width");
+        this.wrapper.style.removeProperty("--pp-field-offset-block");
+        this.wrapper.style.removeProperty("--pp-field-offset-inline");
+        this.wrapper.style.removeProperty("--pp-field-offset-start");
         if (this.createdWrapper) {
           this.wrapper.replaceWith(this.field);
-        } else {
+        } else if (this.addedFieldClass) {
           this.wrapper.classList.remove("pp-field");
         }
         this.wrapper = null;
@@ -866,6 +941,16 @@ var PixelPicker = (() => {
     thumbStyle: "bar",
     /** Seite des Farbfelds: 'end' (Standard) oder 'start'. */
     thumbPosition: "end",
+    /**
+     * Ob ein Wrapper um das Eingabefeld gelegt werden darf:
+     * 'auto' legt einen an, wenn der Elternknoten mehr als das Feld enthaelt ·
+     * true erzwingt ihn · false nutzt immer den vorhandenen Elternknoten.
+     *
+     * false ist der Weg fuer Markup, das auf direkter Eltern-Kind- oder
+     * Geschwisterbeziehung beruht -- etwa Bootstraps .form-floating, das
+     * Feld und Label als Geschwister erwartet. Siehe Issue #1.
+     */
+    wrap: "auto",
     // --- Verhalten -----------------------------------------------------------
     /** Wann sich das Panel oeffnet: 'click', 'focus' oder 'manual'. */
     openOn: "click",
@@ -936,7 +1021,8 @@ var PixelPicker = (() => {
     ppCloseButton: "closeButton",
     ppCloseOnSwatch: "closeOnSwatch",
     ppDefaultColor: "defaultColor",
-    ppGap: "gap"
+    ppGap: "gap",
+    ppWrap: "wrap"
   };
   var BOOLEAN_OPTIONS = /* @__PURE__ */ new Set([
     "alpha",
@@ -950,6 +1036,10 @@ var PixelPicker = (() => {
   ]);
   var NUMBER_OPTIONS = /* @__PURE__ */ new Set(["gap"]);
   function coerce(name, raw) {
+    if (name === "wrap") {
+      if (raw === "auto") return "auto";
+      return raw !== "false" && raw !== "0";
+    }
     if (BOOLEAN_OPTIONS.has(name)) return raw !== "false" && raw !== "0";
     if (NUMBER_OPTIONS.has(name)) {
       const value = Number(raw);

@@ -38,7 +38,11 @@ const plain = (s) =>
 const readmeRows = new Map();
 for (const line of readme.split('\n')) {
   if (!line.startsWith('|')) continue;
-  const cells = line.split('|').slice(1, -1).map((c) => c.trim());
+  // Nur an unmaskierten Trennern teilen: "string \| boolean" ist eine Zelle.
+  const cells = line
+    .split(/(?<!\\)\|/)
+    .slice(1, -1)
+    .map((c) => c.trim().replace(/\\\|/g, '|'));
   if (cells.length !== 4) continue;
   const nameMatch = cells[0].match(/^`(\w+)`$/);
   if (!nameMatch) continue;
@@ -51,8 +55,9 @@ for (const line of readme.split('\n')) {
 
 // Seite: <td><code>option</code></td><td>type</td>…
 const pageRows = new Map();
+// Das Typfeld darf zusammengesetzt sein ("string | boolean"), deshalb kein \w+.
 const rowRe =
-  /<tr>\s*<td><code>(\w+)<\/code><\/td><td>(\w+)<\/td><td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/gs;
+  /<tr>\s*<td><code>(\w+)<\/code><\/td><td>([^<]+)<\/td><td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/gs;
 for (const m of page.matchAll(rowRe)) {
   pageRows.set(m[1], { type: m[2], def: plain(m[3]), desc: plain(m[4]) });
 }

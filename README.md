@@ -92,6 +92,32 @@ Six ways to show the selected color in the field, chosen with `thumbStyle`:
 `thumbPosition: 'start'` moves the swatch to the other side. It follows the writing direction, so
 it works in right-to-left layouts without extra configuration.
 
+## In an existing design
+
+By default the picker needs an element to anchor the swatch to, because an `<input>` cannot hold
+children. It uses the input's parent when the input sits there alone, and only inserts a wrapper
+when it does not.
+
+That last case breaks markup built on a direct parent-child or sibling relationship. Bootstrap's
+`.form-floating` is the common one: it expects the input and its label to be siblings, and an
+inserted element costs the field its height and shape. Set `wrap: false` and the existing parent
+takes the role instead.
+
+```html
+<div class="form-floating">
+  <input type="text" class="form-control" id="brand" value="#87a878">
+  <label for="brand">Brand color</label>
+</div>
+
+<script>
+  PixelPicker.create('#brand', { thumbStyle: 'circle', wrap: false });
+</script>
+```
+
+The swatch scales with the field: `circle` and `square` take 60 % of its height, down to a floor of
+14 px. Both are yours to change — set `--pp-thumb-size` and `--pp-thumb-min-size` on the field's
+parent.
+
 ## Options
 
 Everything you can pass to `create()`. Each option is independent — set only the ones you want to
@@ -103,6 +129,7 @@ change.
 |---|---|---|---|
 | `thumbStyle` | string | `'bar'` | How the color appears in the input. One of `'bar'`, `'circle'`, `'square'`, `'fill'`, `'fill-behind'` or `'none'`. `'fill'` covers the value, `'fill-behind'` keeps it readable |
 | `thumbPosition` | string | `'end'` | Which side the swatch sits on: `'end'` or `'start'`. It follows the writing direction, so `'start'` is on the right in a right-to-left layout |
+| `wrap` | string \| boolean | `'auto'` | Whether a wrapper element may be inserted around the input. `'auto'` adds one only when the parent holds more than the input, `false` always uses the existing parent, `true` always inserts one. Use `false` for markup that relies on a direct parent-child or sibling relationship, such as Bootstrap's `.form-floating` |
 | `theme` | string | `'default'` | Shape of the panel: `'default'` with regular corners, or `'pill'` with rounded controls and round swatches |
 | `themeMode` | string | `'auto'` | Color scheme of the panel: `'light'`, `'dark'`, or `'auto'` to follow the operating system setting |
 
@@ -156,6 +183,7 @@ because it is the more specific source.
 |---|---|
 | `thumbStyle` | `data-pp-thumb` |
 | `thumbPosition` | `data-pp-thumb-position` |
+| `wrap` | `data-pp-wrap` |
 | `theme` | `data-pp-theme` |
 | `themeMode` | `data-pp-theme-mode` |
 | `openOn` | `data-pp-open-on` |

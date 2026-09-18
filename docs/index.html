@@ -431,6 +431,14 @@
     color: inherit;
   }
 
+  /* Der Optionsname steht vor dem Wert, damit die Kachel die Schreibweise
+     zeigt und nicht nur den Namen der Variante. Er tritt zurueck: Gesucht
+     wird der Wert, der Name ist die Einordnung dazu. */
+  .card--tinted .card__head h3 .opt-name {
+    opacity: 0.65;
+    font-weight: 400;
+  }
+
   /* Der Beschreibungstext darf etwas zuruecktreten, aber lesbar bleiben --
      deshalb Deckkraft statt einer zweiten Farbe, die zum Grund passen muss. */
   .card--tinted .card__head p { opacity: 0.82; }
@@ -828,7 +836,7 @@
   <span class="topbar__brand">
     <span class="topbar__mark"></span>
     pixelpicker
-    <span class="topbar__version">v1.0.0</span>
+    <span class="topbar__version">v1.1.0</span>
   </span>
   <span class="topbar__nav">
     <a href="#demo">Demo</a>
@@ -898,7 +906,7 @@
 <div class="grid" id="thumb-grid">
   <div class="card card--tinted">
     <div class="card__head">
-      <h3><code>bar</code></h3>
+      <h3><code><span class="opt-name">thumbStyle:</span> 'bar'</code></h3>
       <p>A strip at the edge of the field. The default.</p>
       <div class="side-switch" role="group" aria-label="Thumb position for bar">
         <button type="button" data-side="start" aria-pressed="false">Start</button>
@@ -911,7 +919,7 @@
   </div>
   <div class="card card--tinted">
     <div class="card__head">
-      <h3><code>circle</code></h3>
+      <h3><code><span class="opt-name">thumbStyle:</span> 'circle'</code></h3>
       <p>A round swatch inside the field.</p>
       <div class="side-switch" role="group" aria-label="Thumb position for circle">
         <button type="button" data-side="start" aria-pressed="false">Start</button>
@@ -924,7 +932,7 @@
   </div>
   <div class="card card--tinted">
     <div class="card__head">
-      <h3><code>square</code></h3>
+      <h3><code><span class="opt-name">thumbStyle:</span> 'square'</code></h3>
       <p>A square swatch inside the field.</p>
       <div class="side-switch" role="group" aria-label="Thumb position for square">
         <button type="button" data-side="start" aria-pressed="false">Start</button>
@@ -937,7 +945,7 @@
   </div>
   <div class="card card--tinted">
     <div class="card__head">
-      <h3><code>fill</code></h3>
+      <h3><code><span class="opt-name">thumbStyle:</span> 'fill'</code></h3>
       <p>The color covers the field completely — the value is hidden. For fields where the color <em>is</em> the display.</p>
     </div>
     <div class="card__demo">
@@ -946,7 +954,7 @@
   </div>
   <div class="card card--tinted">
     <div class="card__head">
-      <h3><code>fill-behind</code></h3>
+      <h3><code><span class="opt-name">thumbStyle:</span> 'fill-behind'</code></h3>
       <p>The color fills the field <em>behind</em> the text, so the value stays readable.</p>
     </div>
     <div class="card__demo">
@@ -955,7 +963,7 @@
   </div>
   <div class="card card--tinted">
     <div class="card__head">
-      <h3><code>none</code></h3>
+      <h3><code><span class="opt-name">thumbStyle:</span> 'none'</code></h3>
       <p>No swatch at all — the input is left exactly as it was.</p>
     </div>
     <div class="card__demo">
@@ -1144,6 +1152,22 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
 
 <span class="pu">&lt;</span><span class="fn">script</span><span class="pu">&gt;</span><span class="fn">PixelPicker</span>.<span class="fn">auto</span>();<span class="pu">&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span></code></pre>
 
+<h3>In an existing design</h3>
+<p>By default the picker needs an element to anchor the swatch to, because an <code>&lt;input&gt;</code> cannot hold children. It uses the input's parent when the input sits there alone, and only inserts a wrapper when it does not.</p>
+
+<p>That last case breaks markup built on a direct parent-child or sibling relationship. Bootstrap's <code>.form-floating</code> is the common one: it expects the input and its label to be siblings, and an inserted element costs the field its height and shape. Set <code class="val">wrap: false</code> and the existing parent takes the role instead.</p>
+
+<pre><code><span class="pu">&lt;</span><span class="fn">div</span> <span class="at">class</span>=<span class="str">"form-floating"</span><span class="pu">&gt;</span>
+  <span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">class</span>=<span class="str">"form-control"</span> <span class="at">id</span>=<span class="str">"brand"</span> <span class="at">value</span>=<span class="str">"#87a878"</span><span class="pu">&gt;</span>
+  <span class="pu">&lt;</span><span class="fn">label</span> <span class="at">for</span>=<span class="str">"brand"</span><span class="pu">&gt;</span>Brand color<span class="pu">&lt;/</span><span class="fn">label</span><span class="pu">&gt;</span>
+<span class="pu">&lt;/</span><span class="fn">div</span><span class="pu">&gt;</span>
+
+<span class="pu">&lt;</span><span class="fn">script</span><span class="pu">&gt;</span>
+  <span class="fn">PixelPicker</span>.<span class="fn">create</span>(<span class="str">'#brand'</span>, { <span class="at">thumbStyle</span>: <span class="str">'circle'</span>, <span class="at">wrap</span>: <span class="kw">false</span> });
+<span class="pu">&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span></code></pre>
+
+<p>The swatch scales with the field: <code class="val">circle</code> and <code class="val">square</code> take 60&nbsp;% of its height, down to a floor of 14&nbsp;px. Both are yours to change — set <code class="val">--pp-thumb-size</code> and <code class="val">--pp-thumb-min-size</code> on the field's parent.</p>
+
 <h2 id="options">Options</h2>
 <p class="lead">Everything you can pass to <code>create()</code>. Each option is independent — set only the ones you want to change.</p>
 
@@ -1158,6 +1182,10 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
     <tr>
       <td><code>thumbPosition</code></td><td>string</td><td><code class="val">'end'</code></td>
       <td>Which side the swatch sits on: <code class="val">'end'</code> or <code class="val">'start'</code>. It follows the writing direction, so <code class="val">'start'</code> is on the right in a right-to-left layout.</td>
+    </tr>
+    <tr>
+      <td><code>wrap</code></td><td>string | boolean</td><td><code class="val">'auto'</code></td>
+      <td>Whether a wrapper element may be inserted around the input. <code class="val">'auto'</code> adds one only when the parent holds more than the input, <code class="val">false</code> always uses the existing parent, <code class="val">true</code> always inserts one. Use <code class="val">false</code> for markup that relies on a direct parent-child or sibling relationship, such as Bootstrap's <code>.form-floating</code>.</td>
     </tr>
     <tr>
       <td><code>theme</code></td><td>string</td><td><code class="val">'default'</code></td>
@@ -1286,6 +1314,7 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
   <tbody>
     <tr><td><code>thumbStyle</code></td><td><code class="val">data-pp-thumb</code></td></tr>
     <tr><td><code>thumbPosition</code></td><td><code class="val">data-pp-thumb-position</code></td></tr>
+    <tr><td><code>wrap</code></td><td><code class="val">data-pp-wrap</code></td></tr>
     <tr><td><code>theme</code></td><td><code class="val">data-pp-theme</code></td></tr>
     <tr><td><code>themeMode</code></td><td><code class="val">data-pp-theme-mode</code></td></tr>
     <tr><td><code>openOn</code></td><td><code class="val">data-pp-open-on</code></td></tr>

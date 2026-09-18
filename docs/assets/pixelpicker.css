@@ -1,5 +1,5 @@
 /*!
- * pixelpicker v1.0.0 -- https://mattopen.github.io/pixelpicker/
+ * pixelpicker v1.1.0 -- https://mattopen.github.io/pixelpicker/
  * Copyright (c) 2026 pixelquadrat GmbH
  * Copyright (c) 2021 Mohammed Bassit -- derived from Coloris (MIT)
  * Licensed under the MIT License.
@@ -447,6 +447,8 @@
 }
 .pp-field {
   position: relative;
+}
+.pp-field--owned {
   display: block;
 }
 .pp-field.pp-field input {
@@ -479,44 +481,50 @@
   --pp-thumb-space: 34px;
 }
 .pp-field--bar .pp-thumb {
-  inset-block: 1px;
-  inset-inline-end: 1px;
+  top: calc(var(--pp-field-offset-block, 0px) + var(--pp-field-height, 100%) / 2);
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 1px);
+  block-size: calc(var(--pp-field-height, 100%) - 2px);
   width: 26px;
+  transform: translateY(-50%);
   border-radius: 0 3px 3px 0;
 }
 .pp-field--bar.pp-field--thumb-start .pp-thumb {
-  inset-inline: 1px auto;
+  inset-inline: calc(var(--pp-field-offset-start, 0px) + 1px) auto;
   border-radius: 3px 0 0 3px;
 }
 .pp-field--circle {
   --pp-thumb-space: 38px;
 }
 .pp-field--circle .pp-thumb {
-  inset-inline-end: 8px;
-  top: 50%;
-  width: 22px;
-  height: 22px;
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 8px);
+  top: calc(var(--pp-field-offset-block, 0px) + var(--pp-field-height, 100%) / 2);
+  block-size: var(--pp-thumb-size, calc(var(--pp-field-height, 100%) * 0.6));
+  inline-size: auto;
+  min-block-size: var(--pp-thumb-min-size, 14px);
+  aspect-ratio: 1;
   transform: translateY(-50%);
   border: 2px solid var(--pp-border, #d9dce1);
   border-radius: 50%;
 }
 .pp-field--circle.pp-field--thumb-start .pp-thumb {
-  inset-inline: 8px auto;
+  inset-inline: calc(var(--pp-field-offset-start, 0px) + 8px) auto;
 }
 .pp-field--square {
   --pp-thumb-space: 38px;
 }
 .pp-field--square .pp-thumb {
-  inset-inline-end: 8px;
-  top: 50%;
-  width: 22px;
-  height: 22px;
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 8px);
+  top: calc(var(--pp-field-offset-block, 0px) + var(--pp-field-height, 100%) / 2);
+  block-size: var(--pp-thumb-size, calc(var(--pp-field-height, 100%) * 0.6));
+  inline-size: auto;
+  min-block-size: var(--pp-thumb-min-size, 14px);
+  aspect-ratio: 1;
   transform: translateY(-50%);
   border: 2px solid var(--pp-border, #d9dce1);
   border-radius: 4px;
 }
 .pp-field--square.pp-field--thumb-start .pp-thumb {
-  inset-inline: 8px auto;
+  inset-inline: calc(var(--pp-field-offset-start, 0px) + 8px) auto;
 }
 .pp-field--fill {
   --pp-thumb-space: 10px;
@@ -528,7 +536,10 @@
   background-image: none;
 }
 .pp-field--fill .pp-thumb {
-  inset: 1px;
+  top: calc(var(--pp-field-offset-block, 0px) + 1px);
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 1px);
+  block-size: calc(var(--pp-field-height, 100%) - 2px);
+  inline-size: calc(var(--pp-field-width, 100%) - 2px);
   z-index: 1;
   border-radius: var(--pp-field-radius, 6px);
   background: var(--pp-thumb-color, transparent);
@@ -550,7 +561,10 @@
   opacity: 0.6;
 }
 .pp-field--fill-behind .pp-thumb {
-  inset: 1px;
+  top: calc(var(--pp-field-offset-block, 0px) + 1px);
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 1px);
+  block-size: calc(var(--pp-field-height, 100%) - 2px);
+  inline-size: calc(var(--pp-field-width, 100%) - 2px);
   z-index: 0;
   border-radius: var(--pp-field-radius, 6px);
 }

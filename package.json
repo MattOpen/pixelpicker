@@ -1,6 +1,6 @@
 {
   "name": "pixelpicker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A lightweight, dependency-free color picker. Uses the Popover API and CSS Anchor Positioning, with a JavaScript fallback.",
   "keywords": [
     "color",

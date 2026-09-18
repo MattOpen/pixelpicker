@@ -32,6 +32,11 @@ export class PickerInstance {
     this.panel = null;
     this.wrapper = null;
     this.thumb = null;
+    // Was destroy() zurueckzunehmen hat: ein selbst eingezogener Knoten oder
+    // nur die Klasse auf einem fremden.
+    this.createdWrapper = false;
+    this.addedFieldClass = false;
+    this.fieldObserver = null;
     this.listeners = [];
     this.destroyed = false;
     this.valueBeforeOpen = null;
@@ -52,9 +57,14 @@ export class PickerInstance {
   /**
    * Wrapper und Farbfeld anlegen.
    *
-   * Das Feld bekommt einen Wrapper, damit das Farbfeld darin liegen kann. Der
-   * Wrapper traegt den Modifier, nicht das Feld -- so kann das Farbfeld ueber
-   * dem Feld liegen (fill-behind) oder darin (bar, circle, square).
+   * Das Farbfeld braucht einen Knoten, an dem es haengt -- der traegt den
+   * Modifier, nicht das Feld selbst. Dafuer kommt der vorhandene Elternknoten
+   * in Frage; nur wo der noch anderes enthaelt, wird einer eingezogen.
+   *
+   * Die Option wrap steuert das, siehe Issue #1: Markup, das auf direkter
+   * Eltern-Kind- oder Geschwisterbeziehung beruht (Bootstraps .form-floating
+   * erwartet Feld und Label als Geschwister), zerbricht an einem
+   * eingeschobenen Knoten.
    */
   #buildThumb() {
     const { thumbStyle } = this.options;
@@ -63,12 +73,17 @@ export class PickerInstance {
     const parent = this.field.parentNode;
     let wrapper = parent;
 
-    if (!parent.classList.contains('pp-field')) {
+    if (this.#needsWrapper(parent)) {
       wrapper = document.createElement('div');
-      wrapper.className = 'pp-field';
+      wrapper.className = 'pp-field pp-field--owned';
       parent.insertBefore(wrapper, this.field);
       wrapper.appendChild(this.field);
       this.createdWrapper = true;
+    } else if (!parent.classList.contains('pp-field')) {
+      // Fremder Knoten uebernimmt die Rolle. Beim Aufraeumen faellt die
+      // Klasse wieder weg, deshalb wird vermerkt, dass sie von hier kommt.
+      parent.classList.add('pp-field');
+      this.addedFieldClass = true;
     }
 
     wrapper.classList.add(`pp-field--${thumbStyle}`);
@@ -97,6 +112,83 @@ export class PickerInstance {
 
     this.wrapper = wrapper;
     this.thumb = thumb;
+
+    // Erst hier: der Beobachter schreibt auf this.wrapper.
+    this.#trackFieldHeight();
+  }
+
+  /**
+   * Die Hoehe des Feldes als --pp-field-height fuehren.
+   *
+   * Prozentangaben am Farbfeld beziehen sich auf den Knoten, an dem es haengt
+   * -- und der ist nicht immer das Feld: Uebernimmt ein fremder Elternknoten
+   * die Rolle (wrap: false), bringt der eigene Polsterung mit und ist hoeher.
+   * Die Feldhoehe ist die einzige verlaessliche Bezugsgroesse, und CSS kann
+   * sie von dort aus nicht lesen.
+   *
+   * Der ResizeObserver haelt den Wert aktuell, damit er nicht nach dem ersten
+   * Umbruch oder einer Aenderung der Schriftgroesse veraltet.
+   */
+  #trackFieldHeight() {
+    const write = () => {
+      const field = this.field.getBoundingClientRect();
+      if (field.height <= 0) return;
+
+      const style = this.wrapper.style;
+      style.setProperty('--pp-field-height', `${field.height}px`);
+
+      // Uebernimmt ein fremder Knoten die Rolle, liegt das Feld nicht an
+      // dessen Rand: Der Versatz macht den Unterschied messbar, damit
+      // inset-Werte trotzdem am Feld ausgerichtet bleiben.
+      if (this.createdWrapper) {
+        // Der eigene Knoten umschliesst nur das Feld: kein Versatz, und die
+        // Breite ist seine eigene.
+        style.setProperty('--pp-field-offset-block', '0px');
+        style.setProperty('--pp-field-offset-inline', '0px');
+        style.setProperty('--pp-field-offset-start', '0px');
+        style.setProperty('--pp-field-width', `${field.width}px`);
+        return;
+      }
+
+      const host = this.wrapper.getBoundingClientRect();
+      const rtl = getComputedStyle(this.wrapper).direction === 'rtl';
+      const left = field.left - host.left;
+      const right = host.right - field.right;
+      const inlineEnd = rtl ? left : right;
+      const inlineStart = rtl ? right : left;
+
+      style.setProperty('--pp-field-offset-block', `${field.top - host.top}px`);
+      style.setProperty('--pp-field-offset-inline', `${Math.max(inlineEnd, 0)}px`);
+      // Beide Seiten getrennt: eine Anwendung darf links anders polstern
+      // als rechts, und die Flaeche muss trotzdem auf dem Feld liegen.
+      style.setProperty('--pp-field-width', `${field.width}px`);
+      style.setProperty('--pp-field-offset-start', `${Math.max(inlineStart, 0)}px`);
+    };
+
+    write();
+
+    if (typeof ResizeObserver === 'undefined') return;
+    this.fieldObserver = new ResizeObserver(write);
+    this.fieldObserver.observe(this.field);
+  }
+
+  /**
+   * Braucht das Feld einen eigenen Wrapper?
+   *
+   * 'auto' entscheidet nach dem Inhalt des Elternknotens: Steht das Feld dort
+   * allein, kann der Knoten die Rolle uebernehmen. Enthaelt er mehr -- ein
+   * Label, eine Schaltflaeche, zwei Felder --, bekaeme das Farbfeld sonst
+   * einen Bezugsrahmen, der groesser ist als das Feld.
+   */
+  #needsWrapper(parent) {
+    const { wrap } = this.options;
+
+    if (parent.classList.contains('pp-field')) return false;
+    if (wrap === false) return false;
+    if (wrap === true) return true;
+
+    // Andere Elemente neben dem Feld? Textknoten aus Einrueckung zaehlen nicht.
+    return Array.from(parent.children).some((child) => child !== this.field);
   }
 
   /** Farbe des Feldes in den Thumb uebernehmen. */
@@ -311,6 +403,9 @@ export class PickerInstance {
     this.listeners.forEach((off) => off());
     this.listeners = [];
 
+    this.fieldObserver?.disconnect();
+    this.fieldObserver = null;
+
     this.thumb?.remove();
     this.thumb = null;
 
@@ -320,10 +415,17 @@ export class PickerInstance {
       this.wrapper.style.removeProperty('--pp-thumb-color');
       this.wrapper.style.removeProperty('--pp-thumb-contrast');
       this.wrapper.style.removeProperty('--pp-field-radius');
+      this.wrapper.style.removeProperty('--pp-field-height');
+      this.wrapper.style.removeProperty('--pp-field-width');
+      this.wrapper.style.removeProperty('--pp-field-offset-block');
+      this.wrapper.style.removeProperty('--pp-field-offset-inline');
+      this.wrapper.style.removeProperty('--pp-field-offset-start');
 
       if (this.createdWrapper) {
         this.wrapper.replaceWith(this.field);
-      } else {
+      } else if (this.addedFieldClass) {
+        // Nur was von hier kam, wird zurueckgenommen. Trug der Knoten die
+        // Klasse schon vorher, gehoert sie der Anwendung.
         this.wrapper.classList.remove('pp-field');
       }
       this.wrapper = null;

@@ -50,6 +50,12 @@ export interface Options {
   thumbStyle?: ThumbStyle;
   /** Seite des Farbfelds. Voreinstellung: 'end'. */
   thumbPosition?: ThumbPosition;
+  /**
+   * Ob ein Wrapper um das Eingabefeld gelegt werden darf. Voreinstellung:
+   * 'auto'. false nutzt immer den vorhandenen Elternknoten -- noetig fuer
+   * Markup wie Bootstraps .form-floating (Issue #1).
+   */
+  wrap?: 'auto' | boolean;
   /** Wann sich das Panel oeffnet. Voreinstellung: 'click'. */
   openOn?: OpenTrigger;
   /** Panel nach Wahl eines Farbfelds schliessen. Voreinstellung: false. */

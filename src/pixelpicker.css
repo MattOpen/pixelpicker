@@ -496,8 +496,17 @@
    Modifier im Markup, zu denen es kein CSS gab (Auftrag 149, Punkt 7.b).
    ========================================================================== */
 
+/* Der Bezugsrahmen des Farbfelds. Diesen Knoten legt das Paket entweder selbst
+   an oder es uebernimmt den vorhandenen Elternknoten (Option wrap, Issue #1).
+   Deshalb steht hier nur, was das Farbfeld zwingend braucht: einen
+   Positionsbezug. Alles Weitere gehoert der Anwendung. */
 .pp-field {
   position: relative;
+}
+
+/* display gilt nur fuer den selbst angelegten Knoten -- auf einem fremden
+   wuerde es dessen Layout aushebeln (Bootstraps .form-floating etwa). */
+.pp-field--owned {
   display: block;
 }
 
@@ -543,36 +552,55 @@
   --pp-thumb-space: 34px;
 }
 
+/* Der Streifen fuellt die Feldhoehe bis auf den Rand. Gerechnet wird gegen
+   --pp-field-height statt ueber inset-block: Bei wrap: false waere der Bezug
+   sonst der Elternknoten der Anwendung, und der Streifen stuende ueber das
+   Feld hinaus (Issue #1). */
 .pp-field--bar .pp-thumb {
-  inset-block: 1px;
-  inset-inline-end: 1px;
+  top: calc(var(--pp-field-offset-block, 0px) + var(--pp-field-height, 100%) / 2);
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 1px);
+  block-size: calc(var(--pp-field-height, 100%) - 2px);
   width: 26px;
+  transform: translateY(-50%);
   border-radius: 0 3px 3px 0;
 }
 
 .pp-field--bar.pp-field--thumb-start .pp-thumb {
-  inset-inline: 1px auto;
+  inset-inline: calc(var(--pp-field-offset-start, 0px) + 1px) auto;
   border-radius: 3px 0 0 3px;
 }
 
-/* --- circle: rundes Farbfeld --------------------------------------------- */
+/* --- circle: rundes Farbfeld ---------------------------------------------
+   Die Groesse waechst mit dem Feld: 60 % seiner Hoehe, quadratisch ueber
+   aspect-ratio, weil eine Breite in Prozent sich auf die Feldbreite beziehen
+   wuerde. 60 % trifft das frueher feste Mass (22px in einem 40px hohen Feld).
+
+   Bezug ist --pp-field-height, nicht 100 % -- eine Prozentangabe gilt dem
+   Knoten, an dem das Farbfeld haengt, und der ist bei wrap: false der
+   Elternknoten der Anwendung samt dessen Polsterung. Den Wert misst
+   instance.js und haelt ihn per ResizeObserver aktuell.
+
+   Darunter greift min-block-size, sonst wird das Farbfeld in einem flachen
+   Feld zu klein zum Treffen. Beide Werte sind ueberschreibbar (Issue #1). */
 
 .pp-field--circle {
   --pp-thumb-space: 38px;
 }
 
 .pp-field--circle .pp-thumb {
-  inset-inline-end: 8px;
-  top: 50%;
-  width: 22px;
-  height: 22px;
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 8px);
+  top: calc(var(--pp-field-offset-block, 0px) + var(--pp-field-height, 100%) / 2);
+  block-size: var(--pp-thumb-size, calc(var(--pp-field-height, 100%) * 0.6));
+  inline-size: auto;
+  min-block-size: var(--pp-thumb-min-size, 14px);
+  aspect-ratio: 1;
   transform: translateY(-50%);
   border: 2px solid var(--pp-border, #d9dce1);
   border-radius: 50%;
 }
 
 .pp-field--circle.pp-field--thumb-start .pp-thumb {
-  inset-inline: 8px auto;
+  inset-inline: calc(var(--pp-field-offset-start, 0px) + 8px) auto;
 }
 
 /* --- square: eckiges Farbfeld -------------------------------------------- */
@@ -582,17 +610,19 @@
 }
 
 .pp-field--square .pp-thumb {
-  inset-inline-end: 8px;
-  top: 50%;
-  width: 22px;
-  height: 22px;
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 8px);
+  top: calc(var(--pp-field-offset-block, 0px) + var(--pp-field-height, 100%) / 2);
+  block-size: var(--pp-thumb-size, calc(var(--pp-field-height, 100%) * 0.6));
+  inline-size: auto;
+  min-block-size: var(--pp-thumb-min-size, 14px);
+  aspect-ratio: 1;
   transform: translateY(-50%);
   border: 2px solid var(--pp-border, #d9dce1);
   border-radius: 4px;
 }
 
 .pp-field--square.pp-field--thumb-start .pp-thumb {
-  inset-inline: 8px auto;
+  inset-inline: calc(var(--pp-field-offset-start, 0px) + 8px) auto;
 }
 
 /* --- fill: das ganze Feld nimmt die Farbe an -----------------------------
@@ -621,7 +651,10 @@
    damit das Panel weiterhin ueber einen Klick ins Feld aufgeht. Der Radius
    kommt vom Feld (s. fill-behind), damit die Flaeche in dessen Ecken passt. */
 .pp-field--fill .pp-thumb {
-  inset: 1px;
+  top: calc(var(--pp-field-offset-block, 0px) + 1px);
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 1px);
+  block-size: calc(var(--pp-field-height, 100%) - 2px);
+  inline-size: calc(var(--pp-field-width, 100%) - 2px);
   z-index: 1;
   border-radius: var(--pp-field-radius, 6px);
   background: var(--pp-thumb-color, transparent);
@@ -658,7 +691,10 @@
    einen anderen traegt.
      .my-field { --pp-field-radius: 12px; } */
 .pp-field--fill-behind .pp-thumb {
-  inset: 1px;
+  top: calc(var(--pp-field-offset-block, 0px) + 1px);
+  inset-inline-end: calc(var(--pp-field-offset-inline, 0px) + 1px);
+  block-size: calc(var(--pp-field-height, 100%) - 2px);
+  inline-size: calc(var(--pp-field-width, 100%) - 2px);
   z-index: 0;
   border-radius: var(--pp-field-radius, 6px);
 }

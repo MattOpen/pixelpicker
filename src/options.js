@@ -54,6 +54,16 @@ export const DEFAULTS = {
   thumbStyle: 'bar',
   /** Seite des Farbfelds: 'end' (Standard) oder 'start'. */
   thumbPosition: 'end',
+  /**
+   * Ob ein Wrapper um das Eingabefeld gelegt werden darf:
+   * 'auto' legt einen an, wenn der Elternknoten mehr als das Feld enthaelt ·
+   * true erzwingt ihn · false nutzt immer den vorhandenen Elternknoten.
+   *
+   * false ist der Weg fuer Markup, das auf direkter Eltern-Kind- oder
+   * Geschwisterbeziehung beruht -- etwa Bootstraps .form-floating, das
+   * Feld und Label als Geschwister erwartet. Siehe Issue #1.
+   */
+  wrap: 'auto',
 
   // --- Verhalten -----------------------------------------------------------
   /** Wann sich das Panel oeffnet: 'click', 'focus' oder 'manual'. */
@@ -131,7 +141,8 @@ const DATA_MAP = {
   ppCloseButton: 'closeButton',
   ppCloseOnSwatch: 'closeOnSwatch',
   ppDefaultColor: 'defaultColor',
-  ppGap: 'gap'
+  ppGap: 'gap',
+  ppWrap: 'wrap'
 };
 
 const BOOLEAN_OPTIONS = new Set([
@@ -148,6 +159,11 @@ const BOOLEAN_OPTIONS = new Set([
 const NUMBER_OPTIONS = new Set(['gap']);
 
 function coerce(name, raw) {
+  // wrap kennt drei Werte, 'auto' darf nicht zu true werden.
+  if (name === 'wrap') {
+    if (raw === 'auto') return 'auto';
+    return raw !== 'false' && raw !== '0';
+  }
   if (BOOLEAN_OPTIONS.has(name)) return raw !== 'false' && raw !== '0';
   if (NUMBER_OPTIONS.has(name)) {
     const value = Number(raw);
