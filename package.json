@@ -1,0 +1,69 @@
+{
+  "name": "pixelpicker",
+  "version": "1.0.0",
+  "description": "A lightweight, dependency-free color picker. Uses the Popover API and CSS Anchor Positioning, with a JavaScript fallback.",
+  "keywords": [
+    "color",
+    "colour",
+    "picker",
+    "colorpicker",
+    "input",
+    "popover",
+    "anchor-positioning",
+    "no-dependencies"
+  ],
+  "homepage": "https://github.com/MattOpen/pixelpicker#readme",
+  "bugs": "https://github.com/MattOpen/pixelpicker/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MattOpen/pixelpicker.git"
+  },
+  "license": "MIT",
+  "author": "pixelquadrat GmbH <info@pixelquadrat.com> (https://www.pixelquadrat.com/)",
+  "contributors": [
+    "Mohammed Bassit (original Coloris implementation)"
+  ],
+  "type": "module",
+  "main": "./dist/pixelpicker.cjs",
+  "module": "./dist/pixelpicker.mjs",
+  "types": "./dist/pixelpicker.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/pixelpicker.d.ts",
+      "import": "./dist/pixelpicker.mjs",
+      "require": "./dist/pixelpicker.cjs",
+      "default": "./dist/pixelpicker.mjs"
+    },
+    "./dist/pixelpicker.css": "./dist/pixelpicker.css",
+    "./dist/pixelpicker.min.css": "./dist/pixelpicker.min.css",
+    "./css": "./dist/pixelpicker.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "demo": "node build.js && node --run serve",
+    "serve": "node scripts/serve.js",
+    "prepack": "node build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

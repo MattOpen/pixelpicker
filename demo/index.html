@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pixelpicker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%232a9d8f'/></svg>">
+<link rel="stylesheet" href="../dist/pixelpicker.css">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f6f7f9;
+    --border: #e1e4e9;
+    --text: #1d2129;
+    --muted: #6b7280;
+    --accent: #2a9d8f;
+    --code-bg: #f2f4f7;
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --bg: #161a22;
+      --surface: #1e242f;
+      --border: #303849;
+      --text: #e8eaf0;
+      --muted: #9aa3b5;
+      --accent: #48cae4;
+      --code-bg: #1a1f28;
+    }
+  }
+
+  :root[data-theme='dark'] {
+    --bg: #161a22;
+    --surface: #1e242f;
+    --border: #303849;
+    --text: #e8eaf0;
+    --muted: #9aa3b5;
+    --accent: #48cae4;
+    --code-bg: #1a1f28;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0 16px 80px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  header {
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    letter-spacing: -0.02em;
+  }
+
+  .tagline { margin: 0 0 20px; color: var(--muted); font-size: 1.05rem; }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .badge {
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .badge--ok { border-color: var(--accent); color: var(--accent); }
+
+  h2 {
+    margin: 48px 0 6px;
+    font-size: 1.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  h2:first-of-type { margin-top: 0; }
+
+  h3 { margin: 28px 0 6px; font-size: 1.05rem; }
+
+  .lead { margin: 0 0 20px; color: var(--muted); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .card h3 { margin: 0 0 4px; font-size: 0.95rem; }
+  .card p { margin: 0 0 12px; font-size: 0.83rem; color: var(--muted); }
+
+  label.field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  input[type='text'] {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+  }
+
+  input[type='text']:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--code-bg);
+    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', consolas, monospace;
+    font-size: 0.86em;
+  }
+
+  /* Codeblöcke stehen dunkel, damit sie sich vom Fließtext abheben und in
+     beiden Farbschemata gleich aussehen. Die Auszeichnung ist von Hand
+     gesetzt -- eine Highlighting-Bibliothek wäre die erste Abhängigkeit
+     einer Seite, die Abhängigkeitsfreiheit bewirbt. */
+  pre {
+    margin: 12px 0;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    background: #1e1e2e;
+    color: #e2e8f0;
+    overflow-x: auto;
+    font-size: 0.83rem;
+    line-height: 1.6;
+    tab-size: 2;
+  }
+
+  pre code {
+    padding: 0;
+    background: none;
+    color: inherit;
+    font-size: 1em;
+  }
+
+  .cm { color: #6d7fa8; font-style: italic; }
+  .kw { color: #c792ea; }
+  .str { color: #c3e88d; }
+  .fn { color: #82aaff; }
+  .at { color: #ffcb6b; }
+  .pu { color: #89ddff; }
+
+  table {
+    width: 100%;
+    margin: 14px 0 8px;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th { font-weight: 600; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  td:first-child { white-space: nowrap; }
+
+  .scroll-demo {
+    height: 190px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: auto;
+  }
+
+  .spacer { height: 130px; }
+
+  .log {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--code-bg);
+    font-family: ui-monospace, consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    min-height: 2.6em;
+    white-space: pre-wrap;
+  }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+
+  button.demo-btn {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  button.demo-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .note {
+    margin: 16px 0;
+    padding: 12px 16px;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    background: var(--surface);
+    font-size: 0.88rem;
+  }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>pixelpicker</h1>
+  <p class="tagline">A lightweight, dependency-free color picker. The panel is a helper — never a replacement for the input field.</p>
+  <div class="badges">
+    <span class="badge" id="badge-size">~20 KB minified</span>
+    <span class="badge">No dependencies</span>
+    <span class="badge" id="badge-popover">Popover API: checking…</span>
+    <span class="badge" id="badge-anchor">Anchor Positioning: checking…</span>
+  </div>
+</header>
+
+<h2>1 · The input stays yours</h2>
+<p class="lead">Click the field and type a hex value directly — <code>#2a9d8f</code>, <code>rebeccapurple</code>, <code>rgb(42 157 143)</code>. The panel follows along. The focus never leaves the field.</p>
+
+<div class="card">
+  <label class="field-label" for="demo-typing">Type into this field while the panel is open</label>
+  <input type="text" id="demo-typing" value="#2a9d8f">
+  <div class="log" id="log-typing">Waiting…</div>
+</div>
+
+<div class="note">
+  <strong>Why this matters.</strong> The predecessor called <code>focus()</code> on its own internal input when the field was clicked, so anything the user typed went into the panel instead of the field. Here the field keeps the focus and the caret; the panel only ever reads from it.
+</div>
+
+<h2>2 · Thumb styles</h2>
+<p class="lead">Six ways to show the selected color in the field, chosen with the <code>thumbStyle</code> option.</p>
+
+<div class="grid">
+  <div class="card">
+    <h3><code>bar</code></h3>
+    <p>A strip at the end of the field. The default.</p>
+    <input type="text" class="demo-thumb" data-pp-thumb="bar" value="#264653">
+  </div>
+  <div class="card">
+    <h3><code>circle</code></h3>
+    <p>A round swatch inside the field.</p>
+    <input type="text" class="demo-thumb" data-pp-thumb="circle" value="#2a9d8f">
+  </div>
+  <div class="card">
+    <h3><code>square</code></h3>
+    <p>A square swatch inside the field.</p>
+    <input type="text" class="demo-thumb" data-pp-thumb="square" value="#e9c46a">
+  </div>
+  <div class="card">
+    <h3><code>fill</code></h3>
+    <p>The whole field takes the color. Text contrast is computed.</p>
+    <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#e76f51">
+  </div>
+  <div class="card">
+    <h3><code>fill-behind</code></h3>
+    <p>Color behind the text, field background transparent.</p>
+    <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#48cae4">
+  </div>
+  <div class="card">
+    <h3><code>none</code></h3>
+    <p>No swatch. The field is left untouched.</p>
+    <input type="text" class="demo-thumb" data-pp-thumb="none" value="#8ab17d">
+  </div>
+</div>
+
+<h3>Thumb on the leading edge</h3>
+<p class="lead"><code>thumbPosition: 'start'</code> moves the swatch to the other side — it follows the writing direction.</p>
+<div class="grid">
+  <div class="card">
+    <input type="text" class="demo-thumb" data-pp-thumb="bar" data-pp-thumb-position="start" value="#0077b6">
+  </div>
+  <div class="card">
+    <input type="text" class="demo-thumb" data-pp-thumb="circle" data-pp-thumb-position="start" value="#d62828">
+  </div>
+</div>
+
+<h2>3 · Positioning</h2>
+<p class="lead">The panel lives in the top layer, so no <code>z-index</code> can bury it and no ancestor with <code>overflow: hidden</code> can clip it. Scroll the box below — the panel keeps up.</p>
+
+<div class="scroll-demo">
+  <p style="margin-top:0;font-size:0.85rem;color:var(--muted)">This container has <code>overflow: auto</code>. A classic absolutely positioned panel would be cut off here.</p>
+  <label class="field-label" for="demo-scroll">Inside a scroll container</label>
+  <input type="text" id="demo-scroll" value="#023e8a">
+  <div class="spacer"></div>
+  <label class="field-label" for="demo-scroll-2">Near the bottom — the panel flips up</label>
+  <input type="text" id="demo-scroll-2" value="#f4a261">
+  <div class="spacer"></div>
+</div>
+
+<div class="row">
+  <button type="button" class="demo-btn" id="toggle-fallback">Force the JavaScript fallback</button>
+  <span id="fallback-state" style="font-size:0.83rem;color:var(--muted)">Using: checking…</span>
+</div>
+
+<h2>4 · Panel variants</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Format switcher</h3>
+    <p><code>formatToggle: true</code> — switch between hex, rgb and hsl.</p>
+    <input type="text" id="demo-format" value="#2a9d8f">
+  </div>
+  <div class="card">
+    <h3>Swatches only</h3>
+    <p><code>swatchesOnly: true</code> — a fixed palette, nothing else.</p>
+    <input type="text" id="demo-swatches" value="#e9c46a">
+  </div>
+  <div class="card">
+    <h3>No alpha</h3>
+    <p><code>alpha: false</code> — opaque colors only.</p>
+    <input type="text" id="demo-noalpha" value="#264653">
+  </div>
+  <div class="card">
+    <h3>Pill theme</h3>
+    <p><code>theme: 'pill'</code> — rounded panel and swatches.</p>
+    <input type="text" id="demo-pill" value="#0096c7">
+  </div>
+  <div class="card">
+    <h3>Dark panel</h3>
+    <p><code>themeMode: 'dark'</code> — regardless of the OS setting.</p>
+    <input type="text" id="demo-dark" value="#48cae4">
+  </div>
+  <div class="card">
+    <h3>With clear button</h3>
+    <p><code>clearButton: true</code> — empties the field.</p>
+    <input type="text" id="demo-clear" value="#8ab17d">
+  </div>
+</div>
+
+<h2>5 · Lifecycle</h2>
+<p class="lead">Every instance can be taken apart again. After <code>destroy()</code> the field is indistinguishable from one that never had a picker — no listeners, no wrapper, no leftover nodes.</p>
+
+<div class="card">
+  <label class="field-label" for="demo-lifecycle">Create and destroy at will</label>
+  <input type="text" id="demo-lifecycle" value="#7c930a">
+  <div class="row">
+    <button type="button" class="demo-btn" id="btn-create">create()</button>
+    <button type="button" class="demo-btn" id="btn-destroy">destroy()</button>
+    <button type="button" class="demo-btn" id="btn-setvalue">setValue('#d62828')</button>
+    <button type="button" class="demo-btn" id="btn-count">getAll().length</button>
+  </div>
+  <div class="log" id="log-lifecycle">Ready.</div>
+</div>
+
+<h2>6 · Getting started</h2>
+
+<h3>As a module</h3>
+<pre><code><span class="kw">import</span> { <span class="fn">create</span> } <span class="kw">from</span> <span class="str">'pixelpicker'</span>;
+<span class="kw">import</span> <span class="str">'pixelpicker/css'</span>;
+
+<span class="fn">create</span>(<span class="str">'.color-input'</span>, {
+  <span class="at">thumbStyle</span>: <span class="str">'circle'</span>,
+  <span class="at">formatToggle</span>: <span class="kw">true</span>
+});</code></pre>
+
+<h3>As a plain script</h3>
+<pre><code><span class="pu">&lt;</span><span class="fn">link</span> <span class="at">rel</span>=<span class="str">"stylesheet"</span> <span class="at">href</span>=<span class="str">"dist/pixelpicker.css"</span><span class="pu">&gt;</span>
+<span class="pu">&lt;</span><span class="fn">script</span> <span class="at">src</span>=<span class="str">"dist/pixelpicker.js"</span><span class="pu">&gt;&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span>
+<span class="pu">&lt;</span><span class="fn">script</span><span class="pu">&gt;</span>
+  <span class="fn">PixelPicker</span>.<span class="fn">create</span>(<span class="str">'.color-input'</span>, { <span class="at">thumbStyle</span>: <span class="str">'bar'</span> });
+<span class="pu">&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span></code></pre>
+
+<h3>Without any JavaScript call</h3>
+<pre><code><span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pixelpicker</span> <span class="at">data-pp-thumb</span>=<span class="str">"circle"</span> <span class="at">value</span>=<span class="str">"#2a9d8f"</span><span class="pu">&gt;</span>
+
+<span class="pu">&lt;</span><span class="fn">script</span><span class="pu">&gt;</span><span class="fn">PixelPicker</span>.<span class="fn">auto</span>();<span class="pu">&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span></code></pre>
+
+<h2>7 · Options</h2>
+<p class="lead">Every option can be passed to <code>create()</code> or set per field as a <code>data-</code> attribute. Attributes win, because they are the more specific source.</p>
+
+<h3>Appearance</h3>
+<table>
+  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>thumbStyle</code></td><td><code>data-pp-thumb</code></td><td><code>'bar'</code></td><td><code>bar</code>, <code>circle</code>, <code>square</code>, <code>fill</code>, <code>fill-behind</code>, <code>none</code></td></tr>
+    <tr><td><code>thumbPosition</code></td><td><code>data-pp-thumb-position</code></td><td><code>'end'</code></td><td><code>start</code> or <code>end</code>, following the writing direction</td></tr>
+    <tr><td><code>theme</code></td><td><code>data-pp-theme</code></td><td><code>'default'</code></td><td><code>default</code> or <code>pill</code></td></tr>
+    <tr><td><code>themeMode</code></td><td><code>data-pp-theme-mode</code></td><td><code>'auto'</code></td><td><code>light</code>, <code>dark</code> or <code>auto</code> (follows the OS)</td></tr>
+  </tbody>
+</table>
+
+<h3>Behaviour</h3>
+<table>
+  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>openOn</code></td><td><code>data-pp-open-on</code></td><td><code>'click'</code></td><td><code>click</code>, <code>focus</code> or <code>manual</code></td></tr>
+    <tr><td><code>closeOnSwatch</code></td><td><code>data-pp-close-on-swatch</code></td><td><code>false</code></td><td>Close after picking a swatch</td></tr>
+    <tr><td><code>returnFocus</code></td><td>—</td><td><code>true</code></td><td>Return focus to the field on close</td></tr>
+    <tr><td><code>gap</code></td><td><code>data-pp-gap</code></td><td><code>4</code></td><td>Distance between field and panel, in pixels</td></tr>
+    <tr><td><code>forcePositionFallback</code></td><td>—</td><td><code>false</code></td><td>Use the JavaScript fallback even where anchor positioning exists. For testing.</td></tr>
+  </tbody>
+</table>
+
+<h3>Color</h3>
+<table>
+  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>format</code></td><td><code>data-pp-format</code></td><td><code>'auto'</code></td><td><code>auto</code>, <code>hex</code>, <code>rgb</code>, <code>hsl</code>, <code>mixed</code>. <code>auto</code> follows what is already in the field.</td></tr>
+    <tr><td><code>formats</code></td><td>—</td><td><code>['hex','rgb','hsl']</code></td><td>Which formats the switcher offers</td></tr>
+    <tr><td><code>formatToggle</code></td><td><code>data-pp-format-toggle</code></td><td><code>false</code></td><td>Show the format switcher</td></tr>
+    <tr><td><code>alpha</code></td><td><code>data-pp-alpha</code></td><td><code>true</code></td><td>Show the opacity slider</td></tr>
+    <tr><td><code>forceAlpha</code></td><td><code>data-pp-force-alpha</code></td><td><code>false</code></td><td>Always write the alpha channel, even at 1</td></tr>
+    <tr><td><code>defaultColor</code></td><td><code>data-pp-default-color</code></td><td><code>'#000000'</code></td><td>Where an empty field starts</td></tr>
+    <tr><td><code>swatches</code></td><td><code>data-pp-swatches</code></td><td>12 colors</td><td>Array, or a comma-separated list in the attribute. Empty array hides them.</td></tr>
+    <tr><td><code>swatchesOnly</code></td><td><code>data-pp-swatches-only</code></td><td><code>false</code></td><td>Only swatches, no free selection</td></tr>
+  </tbody>
+</table>
+
+<h3>Controls and callbacks</h3>
+<table>
+  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>clearButton</code></td><td><code>data-pp-clear-button</code></td><td><code>false</code></td><td>Button that empties the field</td></tr>
+    <tr><td><code>closeButton</code></td><td><code>data-pp-close-button</code></td><td><code>true</code></td><td>Button that closes the panel</td></tr>
+    <tr><td><code>onInput</code></td><td>—</td><td><code>null</code></td><td><code>(value, instance) =&gt; void</code>, on every change</td></tr>
+    <tr><td><code>onChange</code></td><td>—</td><td><code>null</code></td><td><code>(value, instance) =&gt; void</code>, when a selection completes</td></tr>
+    <tr><td><code>onOpen</code> / <code>onClose</code></td><td>—</td><td><code>null</code></td><td><code>(value, instance) =&gt; void</code></td></tr>
+    <tr><td><code>labels</code></td><td>—</td><td>English</td><td>All accessible names, see the README</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>Many options on one field?</strong> Use <code>data-pp-config</code> with a JSON object instead of a long list of attributes: <code>data-pp-config='{"thumbStyle":"circle","alpha":false}'</code>. Individual attributes still take precedence.
+</div>
+
+<h2>8 · Events</h2>
+<p class="lead">Each instance dispatches events on its own field, so they bubble and can be delegated. Native <code>input</code> and <code>change</code> events fire as well — forms and validators see exactly what they would see from typing.</p>
+
+<pre><code>field.<span class="fn">addEventListener</span>(<span class="str">'pixelpicker:change'</span>, (event) <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(event.detail.value);     <span class="cm">// '#2a9d8f'</span>
+  console.<span class="fn">log</span>(event.detail.instance);  <span class="cm">// the PickerInstance</span>
+});</code></pre>
+
+<table>
+  <thead><tr><th>Event</th><th>When</th></tr></thead>
+  <tbody>
+    <tr><td><code>pixelpicker:open</code></td><td>The panel opened</td></tr>
+    <tr><td><code>pixelpicker:input</code></td><td>The value changed, possibly mid-drag</td></tr>
+    <tr><td><code>pixelpicker:change</code></td><td>A selection completed</td></tr>
+    <tr><td><code>pixelpicker:close</code></td><td>The panel closed</td></tr>
+  </tbody>
+</table>
+
+<h2>9 · API</h2>
+<table>
+  <thead><tr><th>Function</th><th>Returns</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>create(target, options?)</code></td><td><code>PickerInstance[]</code></td><td>Attach to a selector, element or list</td></tr>
+    <tr><td><code>get(target)</code></td><td><code>PickerInstance?</code></td><td>The instance belonging to a field</td></tr>
+    <tr><td><code>getAll()</code></td><td><code>PickerInstance[]</code></td><td>Every live instance</td></tr>
+    <tr><td><code>destroy(target?)</code></td><td><code>number</code></td><td>Tear down; without an argument, all</td></tr>
+    <tr><td><code>closeAll()</code></td><td><code>void</code></td><td>Close every open panel</td></tr>
+    <tr><td><code>auto(selector?, options?)</code></td><td><code>PickerInstance[]</code></td><td>Pick up <code>[data-pixelpicker]</code> fields</td></tr>
+  </tbody>
+</table>
+
+<h3>On an instance</h3>
+<table>
+  <thead><tr><th>Method</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>open()</code> / <code>close()</code> / <code>toggle()</code></td><td>Control the panel. <code>close({ revert: true })</code> restores the value from before opening.</td></tr>
+    <tr><td><code>getValue()</code></td><td>The field's current value</td></tr>
+    <tr><td><code>setValue(value, { silent })</code></td><td>Set the value; <code>silent</code> suppresses the input event</td></tr>
+    <tr><td><code>destroy()</code></td><td>Tear this instance down</td></tr>
+  </tbody>
+</table>
+
+<h2>10 · Keyboard</h2>
+<table>
+  <thead><tr><th>Key</th><th>Where</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td><code>Alt</code> + <code>↓</code></td><td>In the field</td><td>Open the panel and move into it</td></tr>
+    <tr><td><code>Esc</code></td><td>Anywhere</td><td>Close and restore the previous value</td></tr>
+    <tr><td>Arrow keys</td><td>On the marker</td><td>Adjust saturation and brightness</td></tr>
+    <tr><td><code>Shift</code> + arrows</td><td>On the marker</td><td>Adjust in steps of ten</td></tr>
+    <tr><td><code>Tab</code></td><td>In the panel</td><td>Move through the controls</td></tr>
+  </tbody>
+</table>
+
+<footer>
+  <p><strong>pixelpicker</strong> — MIT licensed. Derived from <a href="https://github.com/mdbassit/Coloris">Coloris</a> by Mohammed Bassit, also MIT.</p>
+  <p>Built by <a href="https://www.pixelquadrat.com/">pixelquadrat GmbH</a>.</p>
+</footer>
+
+</div>
+
+<script src="../dist/pixelpicker.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  // --- Capability badges ---------------------------------------------------
+  const popoverOk = PixelPicker.supportsPopover();
+  const anchorOk = PixelPicker.supportsAnchorPositioning();
+
+  const badgePopover = $('badge-popover');
+  badgePopover.textContent = popoverOk ? 'Popover API: yes' : 'Popover API: fallback';
+  badgePopover.classList.toggle('badge--ok', popoverOk);
+
+  const badgeAnchor = $('badge-anchor');
+  badgeAnchor.textContent = anchorOk ? 'Anchor Positioning: yes' : 'Anchor Positioning: JS fallback';
+  badgeAnchor.classList.toggle('badge--ok', anchorOk);
+
+  $('fallback-state').textContent = anchorOk
+    ? 'Using: CSS Anchor Positioning'
+    : 'Using: JavaScript fallback (this browser has no anchor positioning)';
+
+  // --- 1 · Typing ----------------------------------------------------------
+  const logTyping = $('log-typing');
+  PixelPicker.create('#demo-typing', {
+    formatToggle: true,
+    onInput: (value) => {
+      const valid = PixelPicker.isValidColor(value);
+      logTyping.textContent = valid
+        ? `value: ${value}\nparsed: ${JSON.stringify(PixelPicker.parseColor(value))}`
+        : `value: ${value}\nnot a valid color — the field keeps it anyway`;
+    }
+  });
+
+  // --- 2 · Thumb styles ----------------------------------------------------
+  PixelPicker.create('.demo-thumb');
+
+  // --- 3 · Positioning -----------------------------------------------------
+  let fallbackForced = false;
+  const scrollFields = ['#demo-scroll', '#demo-scroll-2'];
+  const makeScrollPickers = () =>
+    scrollFields.forEach((selector) =>
+      PixelPicker.create(selector, {
+        thumbStyle: 'circle',
+        forcePositionFallback: fallbackForced
+      })
+    );
+  makeScrollPickers();
+
+  $('toggle-fallback').addEventListener('click', () => {
+    fallbackForced = !fallbackForced;
+    scrollFields.forEach((selector) => PixelPicker.destroy(selector));
+    makeScrollPickers();
+    $('toggle-fallback').textContent = fallbackForced
+      ? 'Back to anchor positioning'
+      : 'Force the JavaScript fallback';
+    $('fallback-state').textContent = fallbackForced
+      ? 'Using: JavaScript fallback (forced)'
+      : anchorOk
+        ? 'Using: CSS Anchor Positioning'
+        : 'Using: JavaScript fallback (this browser has no anchor positioning)';
+  });
+
+  // --- 4 · Variants --------------------------------------------------------
+  PixelPicker.create('#demo-format', { formatToggle: true, thumbStyle: 'square' });
+  PixelPicker.create('#demo-swatches', { swatchesOnly: true, closeOnSwatch: true, thumbStyle: 'circle' });
+  PixelPicker.create('#demo-noalpha', { alpha: false });
+  PixelPicker.create('#demo-pill', { theme: 'pill', thumbStyle: 'circle' });
+  PixelPicker.create('#demo-dark', { themeMode: 'dark' });
+  PixelPicker.create('#demo-clear', { clearButton: true });
+
+  // --- 5 · Lifecycle -------------------------------------------------------
+  const logLife = $('log-lifecycle');
+  const lifecycleField = '#demo-lifecycle';
+
+  $('btn-create').addEventListener('click', () => {
+    const made = PixelPicker.create(lifecycleField, { thumbStyle: 'square' });
+    logLife.textContent = `create() → ${made.length} instance(s). Total live: ${PixelPicker.getAll().length}`;
+  });
+
+  $('btn-destroy').addEventListener('click', () => {
+    const removed = PixelPicker.destroy(lifecycleField);
+    logLife.textContent = `destroy() → removed ${removed}. Total live: ${PixelPicker.getAll().length}\nThe field is now a plain input again.`;
+  });
+
+  $('btn-setvalue').addEventListener('click', () => {
+    const instance = PixelPicker.get(lifecycleField);
+    if (!instance) {
+      logLife.textContent = 'No instance on that field — press create() first.';
+      return;
+    }
+    instance.setValue('#d62828');
+    logLife.textContent = `setValue('#d62828') → field reads ${instance.getValue()}`;
+  });
+
+  $('btn-count').addEventListener('click', () => {
+    logLife.textContent = `getAll().length → ${PixelPicker.getAll().length}`;
+  });
+
+  PixelPicker.create(lifecycleField, { thumbStyle: 'square' });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules/
+
+# npm pack legt den Tarball im Projektverzeichnis ab.
+*.tgz
+
+# Ausgabe der Playwright-Sitzungen (Screenshots, Snapshots).
+.playwright-mcp/
+
+# Editor und Betriebssystem
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

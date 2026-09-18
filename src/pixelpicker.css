@@ -1,0 +1,668 @@
+/*!
+ * pixelpicker -- https://github.com/MattOpen/pixelpicker
+ * Copyright (c) 2026 pixelquadrat GmbH
+ * Copyright (c) 2021 Mohammed Bassit -- derived from Coloris (MIT)
+ * Licensed under the MIT License.
+ */
+
+/* ==========================================================================
+   Gestaltungswerte
+
+   Alle Farben und Masse stehen als Custom Properties auf .pp-panel bzw.
+   .pp-field. Wer das Aussehen anpassen will, ueberschreibt sie -- das
+   Stylesheet selbst muss dafuer nicht angefasst werden.
+   ========================================================================== */
+
+.pp-panel,
+.pp-field {
+  --pp-radius: 8px;
+  --pp-radius-sm: 4px;
+  --pp-gap: 10px;
+  --pp-focus-ring: 0 0 0 2px var(--pp-bg), 0 0 0 4px var(--pp-accent);
+  --pp-transition: 120ms ease;
+
+  /* Helles Schema als Ausgangswert; das dunkle steht weiter unten. */
+  --pp-bg: #ffffff;
+  --pp-surface: #f4f5f7;
+  --pp-border: #d9dce1;
+  --pp-text: #1d2129;
+  --pp-text-muted: #6b7280;
+  --pp-accent: #2a9d8f;
+  --pp-shadow: 0 10px 30px rgb(15 23 42 / 18%), 0 2px 8px rgb(15 23 42 / 10%);
+  --pp-checker: #c9ced6;
+}
+
+/* Dunkles Schema: per Attribut gesetzt, nicht per Media Query -- die Instanz
+   entscheidet, nicht das Betriebssystem allein (Option themeMode). */
+.pp-panel[data-pp-theme='dark'],
+.pp-field[data-pp-theme='dark'] {
+  --pp-bg: #1f2430;
+  --pp-surface: #2a3040;
+  --pp-border: #3b4254;
+  --pp-text: #e8eaf0;
+  --pp-text-muted: #9aa3b5;
+  --pp-accent: #48cae4;
+  --pp-shadow: 0 10px 30px rgb(0 0 0 / 45%), 0 2px 8px rgb(0 0 0 / 30%);
+  --pp-checker: #454c5e;
+}
+
+/* Karomuster fuer alles, was Transparenz zeigt. */
+.pp-preview,
+.pp-swatch,
+.pp-slider--alpha .pp-slider__input {
+  background-image:
+    linear-gradient(45deg, var(--pp-checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--pp-checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--pp-checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--pp-checker) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+.pp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Das Panel
+   ========================================================================== */
+
+.pp-panel {
+  /* Im Top Layer positioniert der Browser gegen den Viewport. */
+  position: fixed;
+  inset: auto;
+  z-index: 2147483000; /* nur fuer den Fall ohne Popover-Unterstuetzung */
+  box-sizing: border-box;
+  width: 260px;
+  margin: 0;
+  padding: var(--pp-gap);
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-bg);
+  color: var(--pp-text);
+  box-shadow: var(--pp-shadow);
+  font-family: system-ui, -apple-system, 'Segoe UI', roboto, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow: visible;
+}
+
+.pp-panel * {
+  box-sizing: border-box;
+}
+
+/* Die Popover-Voreinstellungen des Browsers zuruecknehmen. */
+.pp-panel:popover-open {
+  display: block;
+  overflow: visible;
+}
+
+.pp-panel::backdrop {
+  background: transparent;
+}
+
+/* --- Positionierung: der moderne Weg ------------------------------------
+   Der Browser rechnet selbst und weicht an den Raendern aus. Es gibt keinen
+   Listener, der mitscrollen muesste. */
+@supports (anchor-name: --probe) {
+  .pp-panel {
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    margin-block: var(--pp-anchor-gap, 4px);
+  }
+
+  /* Rechnet JavaScript, muessen die Browser-Regeln weichen: sonst wirken
+     beide gleichzeitig und heben sich auf. Panel.open() setzt die Klasse. */
+  .pp-panel--js-position {
+    position-area: none;
+    position-try-fallbacks: none;
+    margin-block: 0;
+  }
+}
+
+/* --- Positionierung: der Fallback ---------------------------------------
+   Ohne Anchor-Unterstuetzung setzt JavaScript left und top (position.js). */
+@supports not (anchor-name: --probe) {
+  .pp-panel {
+    top: 0;
+    left: 0;
+  }
+}
+
+/* Ohne Popover-API liegt das Panel im normalen Fluss -- dann traegt es das
+   hidden-Attribut, wenn es geschlossen ist. */
+.pp-panel--no-popover[hidden] {
+  display: none;
+}
+
+/* --- Farbflaeche --------------------------------------------------------- */
+
+.pp-area {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-hue, #f00);
+  cursor: crosshair;
+  touch-action: none;
+  overflow: hidden;
+}
+
+.pp-area__saturation,
+.pp-area__value {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.pp-area__saturation {
+  background: linear-gradient(to right, #fff, rgb(255 255 255 / 0%));
+}
+
+.pp-area__value {
+  background: linear-gradient(to top, #000, rgb(0 0 0 / 0%));
+}
+
+.pp-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--pp-marker-color, transparent);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 35%);
+  cursor: grab;
+  touch-action: none;
+}
+
+.pp-marker:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 35%), 0 0 0 4px var(--pp-accent);
+}
+
+.pp-area:active .pp-marker {
+  cursor: grabbing;
+}
+
+/* --- Regler und Vorschau ------------------------------------------------- */
+
+.pp-controls {
+  display: flex;
+  gap: var(--pp-gap);
+  align-items: center;
+  margin-top: var(--pp-gap);
+}
+
+.pp-preview {
+  position: relative;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--pp-border);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.pp-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--pp-color, transparent);
+}
+
+.pp-sliders {
+  flex: 1 1 auto;
+  display: grid;
+  gap: 8px;
+}
+
+.pp-slider {
+  display: block;
+}
+
+.pp-slider__input {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--pp-border);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pp-slider--hue .pp-slider__input {
+  background-image: linear-gradient(
+    to right,
+    #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%
+  );
+}
+
+.pp-slider--alpha .pp-slider__input {
+  position: relative;
+}
+
+/* Der Alpha-Verlauf liegt ueber dem Karomuster des Reglers. */
+.pp-slider--alpha .pp-slider__input {
+  background-image:
+    linear-gradient(to right, transparent, var(--pp-alpha-to, #000)),
+    linear-gradient(45deg, var(--pp-checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--pp-checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--pp-checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--pp-checker) 75%);
+  background-size: 100% 100%, 8px 8px, 8px 8px, 8px 8px, 8px 8px;
+  background-position: 0 0, 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+.pp-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 45%);
+  cursor: grab;
+}
+
+.pp-slider__input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 45%);
+  cursor: grab;
+}
+
+.pp-slider__input:focus-visible {
+  outline: none;
+  box-shadow: var(--pp-focus-ring);
+}
+
+.pp-panel--no-alpha .pp-slider--alpha {
+  display: none;
+}
+
+/* --- Wertfeld und Format ------------------------------------------------- */
+
+.pp-value {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: var(--pp-gap);
+}
+
+.pp-value__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-surface);
+  color: var(--pp-text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-value__input:focus-visible {
+  outline: none;
+  border-color: var(--pp-accent);
+  box-shadow: var(--pp-focus-ring);
+}
+
+/* Ungueltige Eingabe wird markiert, aber nicht verworfen -- der Nutzer tippt
+   vielleicht noch. */
+.pp-value__input--invalid {
+  border-color: #e76f51;
+}
+
+.pp-format {
+  display: flex;
+  flex: 0 0 auto;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  overflow: hidden;
+}
+
+.pp-format[hidden] {
+  display: none;
+}
+
+.pp-format__option {
+  padding: 0 7px;
+  height: 28px;
+  border: 0;
+  background: var(--pp-surface);
+  color: var(--pp-text-muted);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background var(--pp-transition), color var(--pp-transition);
+}
+
+.pp-format__option + .pp-format__option {
+  border-left: 1px solid var(--pp-border);
+}
+
+.pp-format__option:hover {
+  color: var(--pp-text);
+}
+
+.pp-format__option--active {
+  background: var(--pp-accent);
+  color: #fff;
+}
+
+.pp-format__option:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--pp-accent);
+}
+
+/* --- Farbfelder ---------------------------------------------------------- */
+
+.pp-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: var(--pp-gap);
+}
+
+.pp-swatches[hidden] {
+  display: none;
+}
+
+.pp-swatch {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform var(--pp-transition);
+}
+
+.pp-swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--pp-swatch);
+}
+
+.pp-swatch:hover {
+  transform: scale(1.12);
+}
+
+.pp-swatch:focus-visible {
+  outline: none;
+  box-shadow: var(--pp-focus-ring);
+}
+
+/* Nur Farbfelder: alles andere verschwindet. */
+.pp-panel--swatches-only .pp-area,
+.pp-panel--swatches-only .pp-controls,
+.pp-panel--swatches-only .pp-value {
+  display: none;
+}
+
+.pp-panel--swatches-only .pp-swatches {
+  margin-top: 0;
+}
+
+/* --- Schaltflaechen ------------------------------------------------------ */
+
+.pp-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: var(--pp-gap);
+}
+
+.pp-actions[hidden] {
+  display: none;
+}
+
+.pp-action {
+  flex: 1 1 auto;
+  height: 30px;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-surface);
+  color: var(--pp-text);
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--pp-transition);
+}
+
+.pp-action[hidden] {
+  display: none;
+}
+
+.pp-action:hover {
+  background: var(--pp-border);
+}
+
+.pp-action:focus-visible {
+  outline: none;
+  box-shadow: var(--pp-focus-ring);
+}
+
+.pp-action--close {
+  background: var(--pp-accent);
+  border-color: var(--pp-accent);
+  color: #fff;
+}
+
+.pp-action--close:hover {
+  filter: brightness(1.08);
+}
+
+/* --- Variante 'pill' ----------------------------------------------------- */
+
+.pp-panel--pill {
+  --pp-radius: 16px;
+  --pp-radius-sm: 999px;
+}
+
+.pp-panel--pill .pp-area {
+  border-radius: 12px;
+}
+
+.pp-panel--pill .pp-swatch {
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   Das Eingabefeld und sein Farbfeld
+
+   Fuenf Darstellungen, ueber die Option thumbStyle gewaehlt. Sie sind der
+   Grund, aus dem der Vorgaenger im Portal auseinanderlief: Dort standen
+   Modifier im Markup, zu denen es kein CSS gab (Auftrag 149, Punkt 7.b).
+   ========================================================================== */
+
+.pp-field {
+  position: relative;
+  display: block;
+}
+
+.pp-field input {
+  /* Platz fuer das Farbfeld -- der Wert wird je Variante gesetzt. */
+  padding-inline-end: var(--pp-thumb-space, 0);
+}
+
+.pp-field--thumb-start input {
+  padding-inline-start: var(--pp-thumb-space, 0);
+  padding-inline-end: revert;
+}
+
+.pp-thumb {
+  position: absolute;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: var(--pp-thumb-color, transparent);
+  cursor: pointer;
+  transition: background var(--pp-transition);
+}
+
+/* Leeres Feld: das Farbfeld zeigt einen Schraegstrich statt einer Farbe. */
+.pp-field--empty .pp-thumb {
+  background:
+    linear-gradient(
+      to top left,
+      transparent calc(50% - 1px),
+      #e76f51 calc(50% - 1px),
+      #e76f51 calc(50% + 1px),
+      transparent calc(50% + 1px)
+    ),
+    var(--pp-surface, #f4f5f7);
+}
+
+/* --- bar: Streifen am Rand (Standard) ------------------------------------ */
+
+.pp-field--bar {
+  --pp-thumb-space: 34px;
+}
+
+.pp-field--bar .pp-thumb {
+  inset-block: 1px;
+  inset-inline-end: 1px;
+  width: 26px;
+  border-radius: 0 3px 3px 0;
+}
+
+.pp-field--bar.pp-field--thumb-start .pp-thumb {
+  inset-inline: 1px auto;
+  border-radius: 3px 0 0 3px;
+}
+
+/* --- circle: rundes Farbfeld --------------------------------------------- */
+
+.pp-field--circle {
+  --pp-thumb-space: 38px;
+}
+
+.pp-field--circle .pp-thumb {
+  inset-inline-end: 8px;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  border: 2px solid var(--pp-border, #d9dce1);
+  border-radius: 50%;
+}
+
+.pp-field--circle.pp-field--thumb-start .pp-thumb {
+  inset-inline: 8px auto;
+}
+
+/* --- square: eckiges Farbfeld -------------------------------------------- */
+
+.pp-field--square {
+  --pp-thumb-space: 38px;
+}
+
+.pp-field--square .pp-thumb {
+  inset-inline-end: 8px;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  border: 2px solid var(--pp-border, #d9dce1);
+  border-radius: 4px;
+}
+
+.pp-field--square.pp-field--thumb-start .pp-thumb {
+  inset-inline: 8px auto;
+}
+
+/* --- fill: das ganze Feld nimmt die Farbe an -----------------------------
+   Der Text bleibt lesbar, weil die Schriftfarbe gegen die Hintergrundfarbe
+   gerechnet wird (contrastColor in color.js). */
+
+.pp-field--fill {
+  --pp-thumb-space: 0;
+}
+
+.pp-field--fill input {
+  position: relative;
+  z-index: 1;
+  background-color: var(--pp-thumb-color, transparent);
+  color: var(--pp-thumb-contrast, inherit);
+  transition: background-color var(--pp-transition), color var(--pp-transition);
+}
+
+.pp-field--fill input::placeholder {
+  color: var(--pp-thumb-contrast, inherit);
+  opacity: 0.65;
+}
+
+.pp-field--fill .pp-thumb {
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: transparent;
+}
+
+/* --- fill-behind: Farbe hinter dem Feld ---------------------------------- */
+
+.pp-field--fill-behind {
+  --pp-thumb-space: 0;
+}
+
+.pp-field--fill-behind input {
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+}
+
+.pp-field--fill-behind .pp-thumb {
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+/* --- none: kein Farbfeld ------------------------------------------------- */
+
+.pp-field--none {
+  --pp-thumb-space: 0;
+}
+
+/* ==========================================================================
+   Bewegung reduzieren
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-panel,
+  .pp-panel *,
+  .pp-field * {
+    transition-duration: 0.01ms !important;
+  }
+
+  .pp-swatch:hover {
+    transform: none;
+  }
+}
+
+/* Hoher Kontrast: Raender staerken, damit die Flaechen abgegrenzt bleiben. */
+@media (prefers-contrast: more) {
+  .pp-panel {
+    --pp-border: currentColor;
+  }
+}
