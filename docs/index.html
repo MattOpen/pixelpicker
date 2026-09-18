@@ -323,13 +323,29 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
   }
 
+  /* Code im Fliesstext bekommt eine eigene Farbe, nicht nur einen grauen
+     Kasten: Mit der Textfarbe des Absatzes hebt er sich faktisch nicht ab,
+     und genau darum geht es -- man soll auf einen Blick sehen, was Option
+     und was Wert ist. */
   code {
-    padding: 1px 5px;
-    border-radius: 4px;
-    background: var(--code-bg);
+    padding: 1.5px 6px;
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    color: color-mix(in srgb, var(--accent) 88%, #000);
     font-family: ui-monospace, 'SF Mono', 'Cascadia Code', consolas, monospace;
     font-size: 0.86em;
+    font-weight: 500;
   }
+
+  /* Werte in der Tabelle: die Option traegt die Akzentfarbe, ihr Wert eine
+     zweite -- so sind beide in einer Zeile auseinanderzuhalten. */
+  td code.val {
+    background: color-mix(in srgb, var(--pop-pink) 10%, transparent);
+    color: color-mix(in srgb, var(--pop-pink) 82%, #000);
+  }
+
+  th { font-weight: 700; }
+  td:first-child code { font-weight: 600; }
 
   /* Codeblöcke stehen dunkel, damit sie sich vom Fließtext abheben und in
      beiden Farbschemata gleich aussehen. Die Auszeichnung ist von Hand
@@ -869,61 +885,168 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
 <span class="pu">&lt;</span><span class="fn">script</span><span class="pu">&gt;</span><span class="fn">PixelPicker</span>.<span class="fn">auto</span>();<span class="pu">&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span></code></pre>
 
 <h2 id="options">Options</h2>
-<p class="lead">Every option can be passed to <code>create()</code> or set per field as a <code>data-</code> attribute. Attributes win, because they are the more specific source.</p>
+<p class="lead">Everything you can pass to <code>create()</code>. Each option is independent — set only the ones you want to change.</p>
 
 <h3>Appearance</h3>
 <table>
-  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td><code>thumbStyle</code></td><td><code>data-pp-thumb</code></td><td><code>'bar'</code></td><td><code>bar</code>, <code>circle</code>, <code>square</code>, <code>fill</code>, <code>fill-behind</code>, <code>none</code></td></tr>
-    <tr><td><code>thumbPosition</code></td><td><code>data-pp-thumb-position</code></td><td><code>'end'</code></td><td><code>start</code> or <code>end</code>, following the writing direction</td></tr>
-    <tr><td><code>theme</code></td><td><code>data-pp-theme</code></td><td><code>'default'</code></td><td><code>default</code> or <code>pill</code></td></tr>
-    <tr><td><code>themeMode</code></td><td><code>data-pp-theme-mode</code></td><td><code>'auto'</code></td><td><code>light</code>, <code>dark</code> or <code>auto</code> (follows the OS)</td></tr>
+    <tr>
+      <td><code>thumbStyle</code></td><td>string</td><td><code class="val">'bar'</code></td>
+      <td>How the color appears in the input. One of <code class="val">'bar'</code>, <code class="val">'circle'</code>, <code class="val">'square'</code>, <code class="val">'fill'</code>, <code class="val">'fill-behind'</code> or <code class="val">'none'</code>. <code class="val">'fill'</code> covers the value, <code class="val">'fill-behind'</code> keeps it readable.</td>
+    </tr>
+    <tr>
+      <td><code>thumbPosition</code></td><td>string</td><td><code class="val">'end'</code></td>
+      <td>Which side the swatch sits on: <code class="val">'end'</code> or <code class="val">'start'</code>. It follows the writing direction, so <code class="val">'start'</code> is on the right in a right-to-left layout.</td>
+    </tr>
+    <tr>
+      <td><code>theme</code></td><td>string</td><td><code class="val">'default'</code></td>
+      <td>Shape of the panel: <code class="val">'default'</code> with regular corners, or <code class="val">'pill'</code> with rounded controls and round swatches.</td>
+    </tr>
+    <tr>
+      <td><code>themeMode</code></td><td>string</td><td><code class="val">'auto'</code></td>
+      <td>Color scheme of the panel: <code class="val">'light'</code>, <code class="val">'dark'</code>, or <code class="val">'auto'</code> to follow the operating system setting.</td>
+    </tr>
   </tbody>
 </table>
 
 <h3>Behaviour</h3>
 <table>
-  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td><code>openOn</code></td><td><code>data-pp-open-on</code></td><td><code>'click'</code></td><td><code>click</code>, <code>focus</code> or <code>manual</code></td></tr>
-    <tr><td><code>closeOnSwatch</code></td><td><code>data-pp-close-on-swatch</code></td><td><code>false</code></td><td>Close after picking a swatch</td></tr>
-    <tr><td><code>returnFocus</code></td><td>—</td><td><code>true</code></td><td>Return focus to the field on close</td></tr>
-    <tr><td><code>gap</code></td><td><code>data-pp-gap</code></td><td><code>4</code></td><td>Distance between field and panel, in pixels</td></tr>
-    <tr><td><code>forcePositionFallback</code></td><td>—</td><td><code>false</code></td><td>Use the JavaScript fallback even where anchor positioning exists. For testing.</td></tr>
+    <tr>
+      <td><code>openOn</code></td><td>string</td><td><code class="val">'click'</code></td>
+      <td>What opens the panel: <code class="val">'click'</code> on the field, <code class="val">'focus'</code> (so it also opens via keyboard), or <code class="val">'manual'</code> to open it yourself with <code>open()</code>.</td>
+    </tr>
+    <tr>
+      <td><code>closeOnSwatch</code></td><td>boolean</td><td><code class="val">false</code></td>
+      <td>Set <code class="val">true</code> to close the panel as soon as a swatch is picked. Useful together with <code>swatchesOnly</code>, where one click is the whole interaction.</td>
+    </tr>
+    <tr>
+      <td><code>returnFocus</code></td><td>boolean</td><td><code class="val">true</code></td>
+      <td>Put the focus back into the field when the panel closes. Set <code class="val">false</code> if your own code moves the focus somewhere else.</td>
+    </tr>
+    <tr>
+      <td><code>gap</code></td><td>number</td><td><code class="val">4</code></td>
+      <td>Distance in pixels between the field and the panel.</td>
+    </tr>
+    <tr>
+      <td><code>forcePositionFallback</code></td><td>boolean</td><td><code class="val">false</code></td>
+      <td>Set <code class="val">true</code> to use the JavaScript positioning even in browsers that support CSS Anchor Positioning. For testing that path — leave it off in production.</td>
+    </tr>
   </tbody>
 </table>
 
 <h3>Color</h3>
 <table>
-  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td><code>format</code></td><td><code>data-pp-format</code></td><td><code>'auto'</code></td><td><code>auto</code>, <code>hex</code>, <code>rgb</code>, <code>hsl</code>, <code>mixed</code>. <code>auto</code> follows what is already in the field.</td></tr>
-    <tr><td><code>formats</code></td><td>—</td><td><code>['hex','rgb','hsl']</code></td><td>Which formats the switcher offers</td></tr>
-    <tr><td><code>formatToggle</code></td><td><code>data-pp-format-toggle</code></td><td><code>false</code></td><td>Show the format switcher</td></tr>
-    <tr><td><code>alpha</code></td><td><code>data-pp-alpha</code></td><td><code>true</code></td><td>Show the opacity slider</td></tr>
-    <tr><td><code>forceAlpha</code></td><td><code>data-pp-force-alpha</code></td><td><code>false</code></td><td>Always write the alpha channel, even at 1</td></tr>
-    <tr><td><code>defaultColor</code></td><td><code>data-pp-default-color</code></td><td><code>'#000000'</code></td><td>Where an empty field starts</td></tr>
-    <tr><td><code>swatches</code></td><td><code>data-pp-swatches</code></td><td>12 colors</td><td>Array, or a comma-separated list in the attribute. Empty array hides them.</td></tr>
-    <tr><td><code>swatchesOnly</code></td><td><code>data-pp-swatches-only</code></td><td><code>false</code></td><td>Only swatches, no free selection</td></tr>
+    <tr>
+      <td><code>format</code></td><td>string</td><td><code class="val">'auto'</code></td>
+      <td>What gets written into the field: <code class="val">'hex'</code>, <code class="val">'rgb'</code>, <code class="val">'hsl'</code>, <code class="val">'mixed'</code>, or <code class="val">'auto'</code> to keep whatever format the field already holds.</td>
+    </tr>
+    <tr>
+      <td><code>formats</code></td><td>array</td><td><code class="val">['hex','rgb','hsl']</code></td>
+      <td>Which formats the switcher offers, in this order. Shorten it to offer fewer.</td>
+    </tr>
+    <tr>
+      <td><code>formatToggle</code></td><td>boolean</td><td><code class="val">false</code></td>
+      <td>Set <code class="val">true</code> to show the format switcher inside the panel.</td>
+    </tr>
+    <tr>
+      <td><code>alpha</code></td><td>boolean</td><td><code class="val">true</code></td>
+      <td>Show the opacity slider. Set <code class="val">false</code> for opaque colors only.</td>
+    </tr>
+    <tr>
+      <td><code>forceAlpha</code></td><td>boolean</td><td><code class="val">false</code></td>
+      <td>Set <code class="val">true</code> to always write the alpha channel, even when it is <code class="val">1</code> — you get <code class="val">#2a9d8fff</code> instead of <code class="val">#2a9d8f</code>.</td>
+    </tr>
+    <tr>
+      <td><code>defaultColor</code></td><td>string</td><td><code class="val">'#000000'</code></td>
+      <td>Which color the panel starts on when the field is empty.</td>
+    </tr>
+    <tr>
+      <td><code>swatches</code></td><td>array</td><td>12 colors</td>
+      <td>The palette shown at the bottom of the panel. Pass your own array of color strings, or an empty array <code class="val">[]</code> to hide the palette entirely.</td>
+    </tr>
+    <tr>
+      <td><code>swatchesOnly</code></td><td>boolean</td><td><code class="val">false</code></td>
+      <td>Set <code class="val">true</code> to show nothing but the palette — no area, no sliders. For brand colors, where free choice is not wanted.</td>
+    </tr>
   </tbody>
 </table>
 
-<h3>Controls and callbacks</h3>
+<h3>Controls</h3>
 <table>
-  <thead><tr><th>Option</th><th>Attribute</th><th>Default</th><th>Meaning</th></tr></thead>
+  <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td><code>clearButton</code></td><td><code>data-pp-clear-button</code></td><td><code>false</code></td><td>Button that empties the field</td></tr>
-    <tr><td><code>closeButton</code></td><td><code>data-pp-close-button</code></td><td><code>true</code></td><td>Button that closes the panel</td></tr>
-    <tr><td><code>onInput</code></td><td>—</td><td><code>null</code></td><td><code>(value, instance) =&gt; void</code>, on every change</td></tr>
-    <tr><td><code>onChange</code></td><td>—</td><td><code>null</code></td><td><code>(value, instance) =&gt; void</code>, when a selection completes</td></tr>
-    <tr><td><code>onOpen</code> / <code>onClose</code></td><td>—</td><td><code>null</code></td><td><code>(value, instance) =&gt; void</code></td></tr>
-    <tr><td><code>labels</code></td><td>—</td><td>English</td><td>All accessible names, see the README</td></tr>
+    <tr>
+      <td><code>clearButton</code></td><td>boolean</td><td><code class="val">false</code></td>
+      <td>Set <code class="val">true</code> to add a button that empties the field.</td>
+    </tr>
+    <tr>
+      <td><code>closeButton</code></td><td>boolean</td><td><code class="val">true</code></td>
+      <td>The button that closes the panel. Set <code class="val">false</code> to rely on clicking outside or pressing <code class="val">Esc</code>.</td>
+    </tr>
+    <tr>
+      <td><code>labels</code></td><td>object</td><td>English</td>
+      <td>Every visible and assistive string, for translating the panel. Keys you leave out keep their English default — see <a href="https://github.com/MattOpen/pixelpicker#localization" target="_blank" rel="noopener">Localization</a>.</td>
+    </tr>
   </tbody>
 </table>
+
+<h3>Callbacks</h3>
+<table>
+  <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>onInput</code></td><td>function</td><td><code class="val">null</code></td>
+      <td><code class="val">(value, instance) =&gt; void</code> — fires on every change, including mid-drag and while typing into the field.</td>
+    </tr>
+    <tr>
+      <td><code>onChange</code></td><td>function</td><td><code class="val">null</code></td>
+      <td><code class="val">(value, instance) =&gt; void</code> — fires when a selection is complete. This is the one to save a value on.</td>
+    </tr>
+    <tr>
+      <td><code>onOpen</code></td><td>function</td><td><code class="val">null</code></td>
+      <td><code class="val">(value, instance) =&gt; void</code> — fires after the panel opens.</td>
+    </tr>
+    <tr>
+      <td><code>onClose</code></td><td>function</td><td><code class="val">null</code></td>
+      <td><code class="val">(value, instance) =&gt; void</code> — fires after the panel closes.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="data-attributes">The same options as data attributes</h3>
+<p class="lead">Most options can be set on the element itself, which is handy for server-rendered markup: no JavaScript call per field, just <code>auto()</code> once. An attribute beats the value passed to <code>create()</code>, because it is the more specific source.</p>
+
+<table>
+  <thead><tr><th>Option</th><th>Attribute</th></tr></thead>
+  <tbody>
+    <tr><td><code>thumbStyle</code></td><td><code class="val">data-pp-thumb</code></td></tr>
+    <tr><td><code>thumbPosition</code></td><td><code class="val">data-pp-thumb-position</code></td></tr>
+    <tr><td><code>theme</code></td><td><code class="val">data-pp-theme</code></td></tr>
+    <tr><td><code>themeMode</code></td><td><code class="val">data-pp-theme-mode</code></td></tr>
+    <tr><td><code>openOn</code></td><td><code class="val">data-pp-open-on</code></td></tr>
+    <tr><td><code>closeOnSwatch</code></td><td><code class="val">data-pp-close-on-swatch</code></td></tr>
+    <tr><td><code>gap</code></td><td><code class="val">data-pp-gap</code></td></tr>
+    <tr><td><code>format</code></td><td><code class="val">data-pp-format</code></td></tr>
+    <tr><td><code>formatToggle</code></td><td><code class="val">data-pp-format-toggle</code></td></tr>
+    <tr><td><code>alpha</code></td><td><code class="val">data-pp-alpha</code></td></tr>
+    <tr><td><code>forceAlpha</code></td><td><code class="val">data-pp-force-alpha</code></td></tr>
+    <tr><td><code>defaultColor</code></td><td><code class="val">data-pp-default-color</code></td></tr>
+    <tr><td><code>swatches</code></td><td><code class="val">data-pp-swatches</code> — comma-separated</td></tr>
+    <tr><td><code>swatchesOnly</code></td><td><code class="val">data-pp-swatches-only</code></td></tr>
+    <tr><td><code>clearButton</code></td><td><code class="val">data-pp-clear-button</code></td></tr>
+    <tr><td><code>closeButton</code></td><td><code class="val">data-pp-close-button</code></td></tr>
+  </tbody>
+</table>
+
+<p class="lead"><code>formats</code>, <code>labels</code>, <code>returnFocus</code>, <code>forcePositionFallback</code> and the callbacks have no attribute — they take values that do not fit into one.</p>
 
 <div class="note">
-  <strong>Many options on one field?</strong> Use <code>data-pp-config</code> with a JSON object instead of a long list of attributes: <code>data-pp-config='{"thumbStyle":"circle","alpha":false}'</code>. Individual attributes still take precedence.
+  <strong>Many options on one field?</strong> Use <code>data-pp-config</code> with a JSON object instead of a long list of attributes: <code>data-pp-config='{"thumbStyle":"circle","alpha":false}'</code>. Individual attributes still take precedence over the JSON.
 </div>
 
 <h2>Events</h2>
@@ -969,14 +1092,34 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
 </table>
 
 <h2>Keyboard</h2>
+<p class="lead">The whole picker is operable without a mouse. The field behaves like any other text input until you deliberately step into the panel.</p>
 <table>
-  <thead><tr><th>Key</th><th>Where</th><th>Action</th></tr></thead>
+  <thead><tr><th>Key</th><th>Where</th><th>What happens</th></tr></thead>
   <tbody>
-    <tr><td><code>Alt</code> + <code>↓</code></td><td>In the field</td><td>Open the panel and move into it</td></tr>
-    <tr><td><code>Esc</code></td><td>Anywhere</td><td>Close and restore the previous value</td></tr>
-    <tr><td>Arrow keys</td><td>On the marker</td><td>Adjust saturation and brightness</td></tr>
-    <tr><td><code>Shift</code> + arrows</td><td>On the marker</td><td>Adjust in steps of ten</td></tr>
-    <tr><td><code>Tab</code></td><td>In the panel</td><td>Move through the controls</td></tr>
+    <tr>
+      <td><code class="val">Alt</code> + <code class="val">↓</code></td><td>In the field</td>
+      <td>Opens the panel and moves the focus into it. This is the only way the focus leaves the field, and it takes a deliberate press.</td>
+    </tr>
+    <tr>
+      <td><code class="val">Esc</code></td><td>Anywhere</td>
+      <td>Closes the panel and puts back the value the field had before it opened — an undo for a selection you did not mean to make.</td>
+    </tr>
+    <tr>
+      <td><code class="val">Tab</code></td><td>In the panel</td>
+      <td>Steps through the controls: saturation area, hue, opacity, the value field, the format switcher, the swatches.</td>
+    </tr>
+    <tr>
+      <td>Arrow keys</td><td>On the saturation area</td>
+      <td>Move the marker one step at a time — left and right change saturation, up and down change brightness.</td>
+    </tr>
+    <tr>
+      <td><code class="val">Shift</code> + arrows</td><td>On the saturation area</td>
+      <td>The same, in steps of ten, for crossing the area quickly.</td>
+    </tr>
+    <tr>
+      <td>Arrow keys</td><td>On a slider</td>
+      <td>Adjust hue or opacity. These are native range inputs, so they behave exactly as the browser's own do.</td>
+    </tr>
   </tbody>
 </table>
 

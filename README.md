@@ -84,51 +84,85 @@ it works in right-to-left layouts without extra configuration.
 
 ## Options
 
-Every option can be passed to `create()` or set per field as a `data-` attribute. Attributes win,
-because they are the more specific source.
+Everything you can pass to `create()`. Each option is independent — set only the ones you want to
+change.
 
 ### Appearance
 
-| Option | Attribute | Default | Meaning |
+| Option | Type | Default | Description |
 |---|---|---|---|
-| `thumbStyle` | `data-pp-thumb` | `'bar'` | See the table above |
-| `thumbPosition` | `data-pp-thumb-position` | `'end'` | `start` or `end` |
-| `theme` | `data-pp-theme` | `'default'` | `default` or `pill` |
-| `themeMode` | `data-pp-theme-mode` | `'auto'` | `light`, `dark` or `auto` (follows the OS) |
+| `thumbStyle` | string | `'bar'` | How the color appears in the input. One of `'bar'`, `'circle'`, `'square'`, `'fill'`, `'fill-behind'` or `'none'`. `'fill'` covers the value, `'fill-behind'` keeps it readable |
+| `thumbPosition` | string | `'end'` | Which side the swatch sits on: `'end'` or `'start'`. It follows the writing direction, so `'start'` is on the right in a right-to-left layout |
+| `theme` | string | `'default'` | Shape of the panel: `'default'` with regular corners, or `'pill'` with rounded controls and round swatches |
+| `themeMode` | string | `'auto'` | Color scheme of the panel: `'light'`, `'dark'`, or `'auto'` to follow the operating system |
 
 ### Behaviour
 
-| Option | Attribute | Default | Meaning |
+| Option | Type | Default | Description |
 |---|---|---|---|
-| `openOn` | `data-pp-open-on` | `'click'` | `click`, `focus` or `manual` |
-| `closeOnSwatch` | `data-pp-close-on-swatch` | `false` | Close after picking a swatch |
-| `returnFocus` | — | `true` | Return focus to the field on close |
-| `gap` | `data-pp-gap` | `4` | Distance between field and panel, in pixels |
-| `forcePositionFallback` | — | `false` | Use the JavaScript fallback even where anchor positioning exists. For testing |
+| `openOn` | string | `'click'` | What opens the panel: `'click'` on the field, `'focus'` (so it also opens via keyboard), or `'manual'` to open it yourself with `open()` |
+| `closeOnSwatch` | boolean | `false` | Set `true` to close the panel as soon as a swatch is picked. Useful with `swatchesOnly`, where one click is the whole interaction |
+| `returnFocus` | boolean | `true` | Put the focus back into the field when the panel closes. Set `false` if your own code moves the focus elsewhere |
+| `gap` | number | `4` | Distance in pixels between the field and the panel |
+| `forcePositionFallback` | boolean | `false` | Set `true` to use the JavaScript positioning even where CSS Anchor Positioning exists. For testing that path |
 
 ### Color
 
-| Option | Attribute | Default | Meaning |
+| Option | Type | Default | Description |
 |---|---|---|---|
-| `format` | `data-pp-format` | `'auto'` | `auto`, `hex`, `rgb`, `hsl`, `mixed`. `auto` follows what is already in the field |
-| `formats` | — | `['hex','rgb','hsl']` | Which formats the switcher offers |
-| `formatToggle` | `data-pp-format-toggle` | `false` | Show the format switcher |
-| `alpha` | `data-pp-alpha` | `true` | Show the opacity slider |
-| `forceAlpha` | `data-pp-force-alpha` | `false` | Always write the alpha channel, even at 1 |
-| `defaultColor` | `data-pp-default-color` | `'#000000'` | Where an empty field starts |
-| `swatches` | `data-pp-swatches` | 12 colors | Array, or a comma-separated list in the attribute. An empty array hides them |
-| `swatchesOnly` | `data-pp-swatches-only` | `false` | Only swatches, no free selection |
+| `format` | string | `'auto'` | What gets written into the field: `'hex'`, `'rgb'`, `'hsl'`, `'mixed'`, or `'auto'` to keep the format the field already holds |
+| `formats` | array | `['hex','rgb','hsl']` | Which formats the switcher offers, in this order |
+| `formatToggle` | boolean | `false` | Set `true` to show the format switcher inside the panel |
+| `alpha` | boolean | `true` | Show the opacity slider. Set `false` for opaque colors only |
+| `forceAlpha` | boolean | `false` | Set `true` to always write the alpha channel, even at `1` — `#2a9d8fff` instead of `#2a9d8f` |
+| `defaultColor` | string | `'#000000'` | Which color the panel starts on when the field is empty |
+| `swatches` | array | 12 colors | The palette at the bottom of the panel. Pass your own array, or `[]` to hide it |
+| `swatchesOnly` | boolean | `false` | Set `true` to show nothing but the palette — no area, no sliders. For brand colors |
 
-### Controls and callbacks
+### Controls
 
-| Option | Attribute | Default | Meaning |
+| Option | Type | Default | Description |
 |---|---|---|---|
-| `clearButton` | `data-pp-clear-button` | `false` | Button that empties the field |
-| `closeButton` | `data-pp-close-button` | `true` | Button that closes the panel |
-| `onInput` | — | `null` | `(value, instance) => void`, on every change |
-| `onChange` | — | `null` | `(value, instance) => void`, when a selection completes |
-| `onOpen` / `onClose` | — | `null` | `(value, instance) => void` |
-| `labels` | — | English | All accessible names, see below |
+| `clearButton` | boolean | `false` | Set `true` to add a button that empties the field |
+| `closeButton` | boolean | `true` | The button that closes the panel. Set `false` to rely on clicking outside or `Esc` |
+| `labels` | object | English | Every visible and assistive string, for translating the panel. See [Localization](#localization) |
+
+### Callbacks
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `onInput` | function | `null` | `(value, instance) => void` — fires on every change, including mid-drag and while typing |
+| `onChange` | function | `null` | `(value, instance) => void` — fires when a selection is complete. Save the value on this one |
+| `onOpen` | function | `null` | `(value, instance) => void` — fires after the panel opens |
+| `onClose` | function | `null` | `(value, instance) => void` — fires after the panel closes |
+
+### The same options as data attributes
+
+Most options can be set on the element itself, which is handy for server-rendered markup: no
+JavaScript call per field, just `auto()` once. An attribute beats the value passed to `create()`,
+because it is the more specific source.
+
+| Option | Attribute |
+|---|---|
+| `thumbStyle` | `data-pp-thumb` |
+| `thumbPosition` | `data-pp-thumb-position` |
+| `theme` | `data-pp-theme` |
+| `themeMode` | `data-pp-theme-mode` |
+| `openOn` | `data-pp-open-on` |
+| `closeOnSwatch` | `data-pp-close-on-swatch` |
+| `gap` | `data-pp-gap` |
+| `format` | `data-pp-format` |
+| `formatToggle` | `data-pp-format-toggle` |
+| `alpha` | `data-pp-alpha` |
+| `forceAlpha` | `data-pp-force-alpha` |
+| `defaultColor` | `data-pp-default-color` |
+| `swatches` | `data-pp-swatches` — comma-separated |
+| `swatchesOnly` | `data-pp-swatches-only` |
+| `clearButton` | `data-pp-clear-button` |
+| `closeButton` | `data-pp-close-button` |
+
+`formats`, `labels`, `returnFocus`, `forcePositionFallback` and the callbacks have no attribute —
+they take values that do not fit into one.
 
 Many options on one field? Use `data-pp-config` with a JSON object instead of a long list of
 attributes:
