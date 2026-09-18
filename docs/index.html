@@ -263,14 +263,57 @@
      mehrerer Karten auf einer Linie stehen, auch bei ungleich langem Text. */
   .card .card__demo { margin-top: auto; }
 
+  /* Karten ohne farbigen Kopf -- etwa die Panel-Varianten -- richten ihre
+     Zeilen ebenso aneinander aus: Ueberschrift, Text, Feld. Sonst sitzt das
+     Feld bei jeder Karte woanders, je nachdem wie lang der Text ist. */
+  /* Nur wo subgrid wirklich greift: Ohne die Abfrage wuerde grid-row: span 3
+     die Karten ueber drei Zeilen strecken, ohne dass sie sich ausrichten --
+     das Ergebnis waere schlechter als der Ausgangszustand. */
+  @supports (grid-template-rows: subgrid) {
+    .grid--aligned { align-items: stretch; }
+
+    .grid--aligned > .card {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      align-content: start;
+      gap: 4px;
+    }
+
+    .grid--aligned > .card > :last-child { align-self: end; }
+  }
+
   /* --- Karte, die ihre Farbe zeigt ---------------------------------------
      Der Kopf der Karte nimmt die gewaehlte Farbe an -- genau das, was der
      Picker im Einsatz tut: Man waehlt eine Farbe, und sie wirkt woanders.
      Das Eingabefeld bleibt auf weissem Grund, sonst waeren helle Farben
-     nicht mehr von ihm zu unterscheiden. */
+     nicht mehr von ihm zu unterscheiden.
+
+     Damit die Trennlinie bei allen Karten auf derselben Hoehe sitzt, teilen
+     sie sich ueber subgrid dieselben Zeilen: Ueberschrift, Text, Schalter
+     und Feld. Jede Zeile ist so hoch wie ihr laengster Inhalt in der Reihe
+     -- ohne feste Hoehen, die beim naechsten Satz wieder brechen. */
   .card--tinted {
     padding: 0;
     overflow: hidden;
+  }
+
+  @supports (grid-template-rows: subgrid) {
+    #thumb-grid { align-items: stretch; }
+
+    .card--tinted {
+      display: grid;
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+    }
+
+    .card--tinted .card__head {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      align-content: start;
+      gap: 4px;
+    }
   }
 
   .card--tinted .card__head {
@@ -281,6 +324,10 @@
     color: var(--card-ink, inherit);
     transition: background 160ms ease, color 160ms ease;
   }
+
+  /* Der Schalter steht unten in seiner Zeile: Karten ohne ihn lassen die
+     Zeile leer, statt den Text nach unten zu ziehen. */
+  .card--tinted .side-switch { align-self: end; margin-bottom: 0; }
 
   .card--tinted .card__head h3,
   .card--tinted .card__head p {
@@ -796,7 +843,7 @@
   <span class="at">swatches</span>: [<span class="str">'#4361ee'</span>, <span class="str">'#7209b7'</span>, <span class="str">'#f72585'</span>, <span class="str">'#ffbe0b'</span>],
   <span class="at">swatchesOnly</span>: <span class="kw">true</span>
 });</code></pre>
-<div class="grid">
+<div class="grid grid--aligned">
   <div class="card">
     <h3>Format switcher</h3>
     <p><code>formatToggle: true</code> — switch between hex, rgb and hsl.</p>
