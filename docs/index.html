@@ -238,15 +238,64 @@
     gap: 18px;
   }
 
+  /* Karten stehen auf hellem Grund mit feiner Kontur und weichem Schatten --
+     das graue Feld davor wirkte neben dem Hero stumpf. */
   .card {
+    display: flex;
+    flex-direction: column;
     padding: 18px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--pop-deep) 9%, transparent);
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 5%), 0 6px 18px rgb(16 24 40 / 5%);
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 10px 26px rgb(16 24 40 / 9%);
   }
 
   .card h3 { margin: 0 0 4px; font-size: 0.95rem; }
   .card p { margin: 0 0 12px; font-size: 0.83rem; color: var(--muted); }
+
+  /* Der Rest der Karte schiebt das Feld nach unten, damit die Felder
+     mehrerer Karten auf einer Linie stehen, auch bei ungleich langem Text. */
+  .card .card__demo { margin-top: auto; }
+
+  /* Links/Rechts-Schalter je Karte: dieselbe Variante, andere Seite. */
+  .side-switch {
+    display: inline-flex;
+    margin-bottom: 10px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+  }
+
+  .side-switch button {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 5px;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .side-switch button[aria-pressed='true'] {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .card {
+      border-color: var(--border);
+      box-shadow: none;
+    }
+  }
 
   label.field-label {
     display: block;
@@ -369,6 +418,60 @@
     gap: 8px;
     align-items: center;
     margin-top: 16px;
+  }
+
+  /* --- Der Beweis: abgeschnitten gegen Top Layer -------------------------- */
+
+  .clip-compare {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+  }
+
+  /* Genau der Fall aus der Praxis: ein Input in einem Kasten, der ueber die
+     Kante hinaus nichts durchlaesst. */
+  .clip-box {
+    overflow: hidden;
+    height: 160px;
+    padding: 14px;
+    border: 1px dashed color-mix(in srgb, var(--pop-pink) 45%, transparent);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+
+  /* Ein nachgebautes Panel der klassischen Bauart -- absolut positioniert im
+     Kasten und deshalb an dessen Kante zu Ende. Es ist Attrappe, kein Picker:
+     Es soll zeigen, was pixelpicker gerade NICHT tut. */
+  .fake-panel {
+    position: relative;
+    width: 200px;
+    margin-top: 4px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--bg);
+    box-shadow: 0 8px 24px rgb(16 24 40 / 14%);
+  }
+
+  .fake-panel__area {
+    height: 62px;
+    border-radius: 5px;
+    background: linear-gradient(to top, #000, transparent),
+      linear-gradient(to right, #fff, var(--pop-pink));
+  }
+
+  .fake-panel__row {
+    height: 9px;
+    margin-top: 8px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  }
+
+  .fake-panel__note {
+    margin: 8px 0 0;
+    font-size: 0.72rem;
+    color: var(--pop-pink);
   }
 
   table {
@@ -498,143 +601,96 @@
 <p class="lead">Every tab shows a working picker. <strong>Show setup code</strong> reveals exactly how it was configured.</p>
 
 <div class="tabs" role="tablist">
-  <button class="tab" role="tab" aria-selected="true" aria-controls="tab-typing" id="t-typing">Type it yourself</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-thumbs" id="t-thumbs">Thumb styles</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-position" id="t-position">Inside a scroll box</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-variants" id="t-variants">Panel variants</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-lifecycle" id="t-lifecycle">Lifecycle</button>
+  <button class="tab" role="tab" aria-selected="true" aria-controls="tab-thumbs" id="t-thumbs">The field</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-variants" id="t-variants">The panel</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-typing" id="t-typing">From your code</button>
 </div>
 
-<!-- ── Tab 1: Typing ── -->
-<div class="tab-panel" role="tabpanel" id="tab-typing" aria-labelledby="t-typing">
-<p class="lead">Click the field and type a hex value directly — <code>#2a9d8f</code>, <code>rebeccapurple</code>, <code>rgb(42 157 143)</code>. The panel follows along. The focus never leaves the field.</p>
-
-<div class="demo-controls">
-  <button class="code-btn" data-code="code-typing">Show setup code</button>
-</div>
-
-<pre id="code-typing" hidden><code><span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">id</span>=<span class="str">"demo-typing"</span> <span class="at">value</span>=<span class="str">"#2a9d8f"</span><span class="pu">&gt;</span>
-
-<span class="kw">const</span> [picker] = <span class="fn">create</span>(<span class="str">'#demo-typing'</span>, {
-  <span class="at">onInput</span>: (value) <span class="kw">=&gt;</span> {
-    <span class="cm">// Faellt bei jeder Aenderung -- auch beim Tippen ins Feld.</span>
-    console.<span class="fn">log</span>(value);
-  }
-});</code></pre>
-
-<div class="card">
-  <label class="field-label" for="demo-typing">Type into this field while the panel is open</label>
-  <input type="text" id="demo-typing" value="#2a9d8f">
-  <div class="log" id="log-typing">Waiting…</div>
-</div>
-
-
-<div class="note">
-  <strong>Why this matters.</strong> The predecessor called <code>focus()</code> on its own internal input when the field was clicked, so anything the user typed went into the panel instead of the field. Here the field keeps the focus and the caret; the panel only ever reads from it.
-</div>
-</div>
-
-<!-- ── Tab 2: Thumb styles ── -->
-<div class="tab-panel" role="tabpanel" id="tab-thumbs" aria-labelledby="t-thumbs" hidden>
-<p class="lead">Six ways to show the selected color in the field, chosen with the <code>thumbStyle</code> option.</p>
+<!-- ── Tab 1: The field ── -->
+<div class="tab-panel" role="tabpanel" id="tab-thumbs" aria-labelledby="t-thumbs">
+<p class="lead">How the chosen color appears in the input itself. Six variants via <code>thumbStyle</code>, each on either side via <code>thumbPosition</code> — click a field to open its picker, or switch the side.</p>
 
 <div class="demo-controls">
   <button class="code-btn" data-code="code-thumbs">Show setup code</button>
 </div>
 
-<pre id="code-thumbs" hidden><code><span class="cm">&lt;!-- Per Attribut, ohne eigenen JavaScript-Aufruf je Feld --&gt;</span>
-<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"circle"</span> <span class="at">value</span>=<span class="str">"#2a9d8f"</span><span class="pu">&gt;</span>
-<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"fill"</span> <span class="at">value</span>=<span class="str">"#e76f51"</span><span class="pu">&gt;</span>
+<pre id="code-thumbs" hidden><code><span class="cm">// Per Attribut, ohne einen eigenen Aufruf je Feld:</span>
+<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"circle"</span> <span class="at">value</span>=<span class="str">"#06d6a0"</span><span class="pu">&gt;</span>
 
-<span class="cm">// …oder fuer alle auf einmal, mit einer Voreinstellung:</span>
-<span class="fn">create</span>(<span class="str">'.demo-thumb'</span>, { <span class="at">thumbStyle</span>: <span class="str">'bar'</span> });
+<span class="cm">// …oder fuer viele Felder auf einmal:</span>
+<span class="fn">create</span>(<span class="str">'.color-input'</span>, { <span class="at">thumbStyle</span>: <span class="str">'circle'</span> });
 
-<span class="cm">// Die Seite auf der anderen Seite des Feldes:</span>
-<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"bar"</span>
-       <span class="at">data-pp-thumb-position</span>=<span class="str">"start"</span> <span class="at">value</span>=<span class="str">"#0077b6"</span><span class="pu">&gt;</span></code></pre>
+<span class="cm">// Die Seite waehlen -- 'start' folgt der Schreibrichtung,</span>
+<span class="cm">// steht also in einem RTL-Layout rechts.</span>
+<span class="fn">create</span>(<span class="str">'.color-input'</span>, {
+  <span class="at">thumbStyle</span>: <span class="str">'circle'</span>,
+  <span class="at">thumbPosition</span>: <span class="str">'start'</span>
+});
 
-<div class="grid">
+<span class="cm">// Die Schalter oben bauen die Instanz jeweils neu auf:</span>
+<span class="fn">destroy</span>(field);
+<span class="fn">create</span>(field, { <span class="at">thumbStyle</span>: style, <span class="at">thumbPosition</span>: side });</code></pre>
+
+<div class="grid" id="thumb-grid">
   <div class="card">
     <h3><code>bar</code></h3>
-    <p>A strip at the end of the field. The default.</p>
-    <input type="text" class="demo-thumb" data-pp-thumb="bar" value="#264653">
+    <p>A strip at the edge of the field. The default.</p>
+    <div class="card__demo">
+      <div class="side-switch" role="group" aria-label="Thumb position for bar">
+        <button type="button" data-side="start" aria-pressed="false">Start</button>
+        <button type="button" data-side="end" aria-pressed="true">End</button>
+      </div>
+      <input type="text" class="demo-thumb" data-pp-thumb="bar" value="#4361ee">
+    </div>
   </div>
   <div class="card">
     <h3><code>circle</code></h3>
     <p>A round swatch inside the field.</p>
-    <input type="text" class="demo-thumb" data-pp-thumb="circle" value="#2a9d8f">
+    <div class="card__demo">
+      <div class="side-switch" role="group" aria-label="Thumb position for circle">
+        <button type="button" data-side="start" aria-pressed="false">Start</button>
+        <button type="button" data-side="end" aria-pressed="true">End</button>
+      </div>
+      <input type="text" class="demo-thumb" data-pp-thumb="circle" value="#06d6a0">
+    </div>
   </div>
   <div class="card">
     <h3><code>square</code></h3>
     <p>A square swatch inside the field.</p>
-    <input type="text" class="demo-thumb" data-pp-thumb="square" value="#e9c46a">
+    <div class="card__demo">
+      <div class="side-switch" role="group" aria-label="Thumb position for square">
+        <button type="button" data-side="start" aria-pressed="false">Start</button>
+        <button type="button" data-side="end" aria-pressed="true">End</button>
+      </div>
+      <input type="text" class="demo-thumb" data-pp-thumb="square" value="#ffbe0b">
+    </div>
   </div>
   <div class="card">
     <h3><code>fill</code></h3>
     <p>The color covers the field completely — the value is hidden. For fields where the color <em>is</em> the display.</p>
-    <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#e76f51">
+    <div class="card__demo">
+      <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#fb5607">
+    </div>
   </div>
   <div class="card">
     <h3><code>fill-behind</code></h3>
     <p>The color fills the field <em>behind</em> the text, so the value stays readable.</p>
-    <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#48cae4">
+    <div class="card__demo">
+      <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#4cc9f0">
+    </div>
   </div>
   <div class="card">
     <h3><code>none</code></h3>
-    <p>No swatch. The field is left untouched.</p>
-    <input type="text" class="demo-thumb" data-pp-thumb="none" value="#8ab17d">
-  </div>
-</div>
-
-<h3>Thumb on the leading edge</h3>
-<p class="lead"><code>thumbPosition: 'start'</code> moves the swatch to the other side — it follows the writing direction.</p>
-<div class="grid">
-  <div class="card">
-    <input type="text" class="demo-thumb" data-pp-thumb="bar" data-pp-thumb-position="start" value="#0077b6">
-  </div>
-  <div class="card">
-    <input type="text" class="demo-thumb" data-pp-thumb="circle" data-pp-thumb-position="start" value="#d62828">
+    <p>No swatch at all — the input is left exactly as it was.</p>
+    <div class="card__demo">
+      <input type="text" class="demo-thumb" data-pp-thumb="none" value="#f72585">
+    </div>
   </div>
 </div>
 
 </div>
 
-<!-- ── Tab 3: Positioning ── -->
-<div class="tab-panel" role="tabpanel" id="tab-position" aria-labelledby="t-position" hidden>
-<p class="lead">The hard case: a field inside a scrolling box. A panel positioned the usual way gets clipped at the edge of that box, or buried by whatever has a higher <code>z-index</code>. This one does not — it lives in the browser's top layer. <strong>Scroll inside the grey box</strong> and watch the panel keep up, then flip above the field when it runs out of room.</p>
-
-<div class="demo-controls">
-  <button class="code-btn" data-code="code-position">Show setup code</button>
-</div>
-
-<pre id="code-position" hidden><code><span class="cm">// Nichts zu konfigurieren -- die Positionierung ist eingebaut.</span>
-<span class="fn">create</span>(<span class="str">'#demo-scroll'</span>);
-
-<span class="cm">// Abstand zwischen Feld und Panel, falls noetig:</span>
-<span class="fn">create</span>(<span class="str">'#demo-scroll'</span>, { <span class="at">gap</span>: <span class="kw">12</span> });
-
-<span class="cm">// Den JavaScript-Weg erzwingen -- nur zum Pruefen. Sonst rechnet</span>
-<span class="cm">// der Browser selbst, sofern er Anchor Positioning kennt.</span>
-<span class="fn">create</span>(<span class="str">'#demo-scroll'</span>, { <span class="at">forcePositionFallback</span>: <span class="kw">true</span> });</code></pre>
-
-<div class="scroll-demo">
-  <p style="margin-top:0;font-size:0.85rem;color:var(--muted)">This container has <code>overflow: auto</code>. A classic absolutely positioned panel would be cut off here.</p>
-  <label class="field-label" for="demo-scroll">Inside a scroll container</label>
-  <input type="text" id="demo-scroll" value="#023e8a">
-  <div class="spacer"></div>
-  <label class="field-label" for="demo-scroll-2">Near the bottom — the panel flips up</label>
-  <input type="text" id="demo-scroll-2" value="#f4a261">
-  <div class="spacer"></div>
-</div>
-
-<div class="row">
-  <button type="button" class="demo-btn" id="toggle-fallback">Force the JavaScript fallback</button>
-  <span id="fallback-state" style="font-size:0.83rem;color:var(--muted)">Using: checking…</span>
-</div>
-
-</div>
-
-<!-- ── Tab 4: Panel variants ── -->
+<!-- ── Tab 2: The panel ── -->
 <div class="tab-panel" role="tabpanel" id="tab-variants" aria-labelledby="t-variants" hidden>
 
 <div class="demo-controls">
@@ -650,53 +706,75 @@
 
 <span class="cm">// Eigene Farbfelder statt der zwoelf Standardwerte:</span>
 <span class="fn">create</span>(<span class="str">'#brand-color'</span>, {
-  <span class="at">swatches</span>: [<span class="str">'#06d6a0'</span>, <span class="str">'#118ab2'</span>, <span class="str">'#ef476f'</span>, <span class="str">'#ffd166'</span>],
+  <span class="at">swatches</span>: [<span class="str">'#4361ee'</span>, <span class="str">'#7209b7'</span>, <span class="str">'#f72585'</span>, <span class="str">'#ffbe0b'</span>],
   <span class="at">swatchesOnly</span>: <span class="kw">true</span>
 });</code></pre>
 <div class="grid">
   <div class="card">
     <h3>Format switcher</h3>
     <p><code>formatToggle: true</code> — switch between hex, rgb and hsl.</p>
-    <input type="text" id="demo-format" value="#2a9d8f">
+    <input type="text" id="demo-format" value="#4361ee">
   </div>
   <div class="card">
     <h3>Swatches only</h3>
     <p><code>swatchesOnly: true</code> — a fixed palette, nothing else.</p>
-    <input type="text" id="demo-swatches" value="#e9c46a">
+    <input type="text" id="demo-swatches" value="#ffbe0b">
   </div>
   <div class="card">
     <h3>No alpha</h3>
     <p><code>alpha: false</code> — opaque colors only.</p>
-    <input type="text" id="demo-noalpha" value="#264653">
+    <input type="text" id="demo-noalpha" value="#3a0ca3">
   </div>
   <div class="card">
     <h3>Pill theme</h3>
     <p><code>theme: 'pill'</code> — rounded panel and swatches.</p>
-    <input type="text" id="demo-pill" value="#0096c7">
+    <input type="text" id="demo-pill" value="#7209b7">
   </div>
   <div class="card">
     <h3>Dark panel</h3>
     <p><code>themeMode: 'dark'</code> — regardless of the OS setting.</p>
-    <input type="text" id="demo-dark" value="#48cae4">
+    <input type="text" id="demo-dark" value="#4cc9f0">
   </div>
   <div class="card">
     <h3>With clear button</h3>
     <p><code>clearButton: true</code> — empties the field.</p>
-    <input type="text" id="demo-clear" value="#8ab17d">
+    <input type="text" id="demo-clear" value="#f72585">
   </div>
 </div>
 
 </div>
 
 <!-- ── Tab 5: Lifecycle ── -->
-<div class="tab-panel" role="tabpanel" id="tab-lifecycle" aria-labelledby="t-lifecycle" hidden>
-<p class="lead">Every instance can be taken apart again. After <code>destroy()</code> the field is indistinguishable from one that never had a picker — no listeners, no wrapper, no leftover nodes.</p>
+<div class="tab-panel" role="tabpanel" id="tab-typing" aria-labelledby="t-typing" hidden>
+<p class="lead">The field stays yours: type a value straight into it and the panel follows along. From code, every instance can be created, read, set and taken apart again.</p>
 
-<div class="demo-controls">
-  <button class="code-btn" data-code="code-lifecycle">Show setup code</button>
+<h3>Typing into the field</h3>
+<p class="lead">Click and type <code>#f72585</code>, <code>rebeccapurple</code> or <code>rgb(42 157 143)</code> — the focus never leaves the input.</p>
+
+<div class="card">
+  <label class="field-label" for="demo-typing">Type into this field while the panel is open</label>
+  <input type="text" id="demo-typing" value="#4361ee">
+  <div class="log" id="log-typing">Waiting…</div>
 </div>
 
-<pre id="code-lifecycle" hidden><code><span class="kw">const</span> [picker] = <span class="fn">create</span>(<span class="str">'#demo-lifecycle'</span>);
+<div class="note">
+  <strong>Why this matters.</strong> The predecessor called <code>focus()</code> on its own internal input when the field was clicked, so anything the user typed went into the panel instead of the field. Here the field keeps the focus and the caret; the panel only ever reads from it.
+</div>
+
+<h3>Creating and destroying</h3>
+<p class="lead">After <code>destroy()</code> the field is indistinguishable from one that never had a picker — no listeners, no wrapper, no leftover nodes.</p>
+
+<div class="demo-controls">
+  <button class="code-btn" data-code="code-typing">Show setup code</button>
+</div>
+
+<pre id="code-typing" hidden><code><span class="cm">// Tippen im Feld melden -- onInput faellt bei jeder Aenderung,</span>
+<span class="cm">// auch bei der von Hand eingegebenen.</span>
+<span class="fn">create</span>(<span class="str">'#demo-typing'</span>, {
+  <span class="at">onInput</span>: (value) <span class="kw">=&gt;</span> console.<span class="fn">log</span>(value)
+});
+
+<span class="kw">const</span> [picker] = <span class="fn">create</span>(<span class="str">'#demo-lifecycle'</span>);
 
 picker.<span class="fn">setValue</span>(<span class="str">'#d62828'</span>);   <span class="cm">// Wert von aussen setzen</span>
 picker.<span class="fn">getValue</span>();             <span class="cm">// '#d62828'</span>
@@ -709,7 +787,7 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
 
 <div class="card">
   <label class="field-label" for="demo-lifecycle">Create and destroy at will</label>
-  <input type="text" id="demo-lifecycle" value="#7c930a">
+  <input type="text" id="demo-lifecycle" value="#fb5607">
   <div class="row">
     <button type="button" class="demo-btn" id="btn-create">create()</button>
     <button type="button" class="demo-btn" id="btn-destroy">destroy()</button>
@@ -719,6 +797,52 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
   <div class="log" id="log-lifecycle">Ready.</div>
 </div>
 
+</div>
+
+<h2>It cannot be clipped or buried</h2>
+<p class="lead">Put an input inside a box with <code>overflow: hidden</code> and a conventional picker disappears the moment it opens — the box cuts it off. The panel here lives in the browser's <strong>top layer</strong>, above everything on the page, so no ancestor can clip it and no <code>z-index</code> can bury it. <strong>Open both fields below</strong> to see the difference.</p>
+
+<div class="clip-compare">
+  <div class="card">
+    <h3>A conventional panel</h3>
+    <p>Positioned inside the box, the usual way.</p>
+    <div class="clip-box">
+      <label class="field-label" for="demo-clipped">Clipped by its container</label>
+      <input type="text" id="demo-clipped" value="#f72585" readonly>
+      <div class="fake-panel" id="fake-panel" hidden>
+        <div class="fake-panel__area"></div>
+        <div class="fake-panel__row"></div>
+        <p class="fake-panel__note">…and the rest is cut off.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>pixelpicker</h3>
+    <p>Same box, same <code>overflow: hidden</code>.</p>
+    <div class="clip-box">
+      <label class="field-label" for="demo-topmost">Not clipped at all</label>
+      <input type="text" id="demo-topmost" value="#06d6a0">
+    </div>
+  </div>
+</div>
+
+<h3>Scrolling, flipping, and the fallback</h3>
+<p class="lead">The panel keeps its place while the page or a container scrolls, and flips above the field when there is no room below. Where the browser supports CSS Anchor Positioning it does that itself; otherwise a small JavaScript fallback measures the field. <strong>Force the fallback</strong> to check both paths.</p>
+
+<div class="scroll-demo">
+  <p style="margin-top:0;font-size:0.85rem;color:var(--muted)">This container scrolls. Open a field, then scroll — the panel follows.</p>
+  <label class="field-label" for="demo-scroll">Inside a scroll container</label>
+  <input type="text" id="demo-scroll" value="#4361ee">
+  <div class="spacer"></div>
+  <label class="field-label" for="demo-scroll-2">Near the bottom — the panel flips up</label>
+  <input type="text" id="demo-scroll-2" value="#fb5607">
+  <div class="spacer"></div>
+</div>
+
+<div class="row">
+  <button type="button" class="demo-btn" id="toggle-fallback">Force the JavaScript fallback</button>
+  <span id="fallback-state" style="font-size:0.83rem;color:var(--muted)">Using: checking…</span>
 </div>
 
 <h2 id="install">Getting started</h2>
@@ -965,7 +1089,47 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
   // --- 2 · Thumb styles ----------------------------------------------------
   PixelPicker.create('.demo-thumb');
 
-  // --- 3 · Positioning -----------------------------------------------------
+  // Der Seitenschalter je Karte. Die Seite ist beim Anlegen festgelegt,
+  // deshalb wird die Instanz neu gebaut statt umgestellt -- genau der Weg,
+  // den der Aufsetzcode daneben zeigt.
+  for (const group of document.querySelectorAll('.side-switch')) {
+    const field = group.parentElement.querySelector('input');
+
+    for (const btn of group.querySelectorAll('button')) {
+      btn.addEventListener('click', () => {
+        const side = btn.dataset.side;
+        PixelPicker.destroy(field);
+        PixelPicker.create(field, {
+          thumbStyle: field.dataset.ppThumb,
+          thumbPosition: side
+        });
+        for (const other of group.querySelectorAll('button')) {
+          other.setAttribute('aria-pressed', String(other === btn));
+        }
+      });
+    }
+  }
+
+  // --- 3 · Nicht abzuschneiden ---------------------------------------------
+  // Die Attrappe zeigt, was ein herkoemmlich positioniertes Panel tut. Sie
+  // ist bewusst kein Picker: Das Feld daneben ist der echte.
+  const clipped = $('demo-clipped');
+  const fakePanel = $('fake-panel');
+
+  const toggleFake = (show) => {
+    fakePanel.hidden = !show;
+    clipped.setAttribute('aria-expanded', String(show));
+  };
+
+  clipped.addEventListener('click', () => toggleFake(fakePanel.hidden));
+  clipped.addEventListener('focus', () => toggleFake(true));
+  document.addEventListener('pointerdown', (event) => {
+    if (event.target !== clipped && !fakePanel.contains(event.target)) toggleFake(false);
+  });
+
+  PixelPicker.create('#demo-topmost', { thumbStyle: 'circle' });
+
+  // --- 4 · Scrollen, Umklappen, Fallback -----------------------------------
   let fallbackForced = false;
   const scrollFields = ['#demo-scroll', '#demo-scroll-2'];
   const makeScrollPickers = () =>
