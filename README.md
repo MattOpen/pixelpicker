@@ -1,17 +1,27 @@
 # pixelpicker
 
-A lightweight, dependency-free color picker for text inputs. The panel lives in the browser's top
-layer via the [Popover API](https://developer.mozilla.org/docs/Web/API/Popover_API) and is placed
-with [CSS Anchor Positioning](https://developer.mozilla.org/docs/Web/CSS/CSS_anchor_positioning),
+Color picker for text inputs — zero dependencies, ~20 KB, MIT licensed. Works with any framework
+or a plain `<script>` tag.
+
+**[Live demo & docs → mattopen.github.io/pixelpicker](https://mattopen.github.io/pixelpicker/)**
+
+[![npm](https://img.shields.io/npm/v/pixelpicker.svg)](https://www.npmjs.com/package/pixelpicker)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+---
+
+The panel lives in the browser's top layer via the
+[Popover API](https://developer.mozilla.org/docs/Web/API/Popover_API) and is placed with
+[CSS Anchor Positioning](https://developer.mozilla.org/docs/Web/CSS/CSS_anchor_positioning),
 falling back to a small JavaScript calculation on older browsers.
+
+**The panel is a helper, never a replacement for the input field.** You can always type into the
+field yourself — the focus is never taken away from it and the field is never set to `readonly`.
 
 This project is derived from [Coloris](https://github.com/mdbassit/Coloris) by Mohammed Bassit,
 licensed under the MIT License. It is a rewrite rather than a fork: the instance model, the
 positioning and the public API are new. The original copyright notice is retained in
 [LICENSE](LICENSE).
-
-**The panel is a helper, never a replacement for the input field.** You can always type into the
-field yourself — the focus is never taken away from it and the field is never set to `readonly`.
 
 ## Why
 
@@ -94,45 +104,45 @@ change.
 | `thumbStyle` | string | `'bar'` | How the color appears in the input. One of `'bar'`, `'circle'`, `'square'`, `'fill'`, `'fill-behind'` or `'none'`. `'fill'` covers the value, `'fill-behind'` keeps it readable |
 | `thumbPosition` | string | `'end'` | Which side the swatch sits on: `'end'` or `'start'`. It follows the writing direction, so `'start'` is on the right in a right-to-left layout |
 | `theme` | string | `'default'` | Shape of the panel: `'default'` with regular corners, or `'pill'` with rounded controls and round swatches |
-| `themeMode` | string | `'auto'` | Color scheme of the panel: `'light'`, `'dark'`, or `'auto'` to follow the operating system |
+| `themeMode` | string | `'auto'` | Color scheme of the panel: `'light'`, `'dark'`, or `'auto'` to follow the operating system setting |
 
 ### Behaviour
 
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `openOn` | string | `'click'` | What opens the panel: `'click'` on the field, `'focus'` (so it also opens via keyboard), or `'manual'` to open it yourself with `open()` |
-| `closeOnSwatch` | boolean | `false` | Set `true` to close the panel as soon as a swatch is picked. Useful with `swatchesOnly`, where one click is the whole interaction |
-| `returnFocus` | boolean | `true` | Put the focus back into the field when the panel closes. Set `false` if your own code moves the focus elsewhere |
+| `closeOnSwatch` | boolean | `false` | Set `true` to close the panel as soon as a swatch is picked. Useful together with `swatchesOnly`, where one click is the whole interaction |
+| `returnFocus` | boolean | `true` | Put the focus back into the field when the panel closes. Set `false` if your own code moves the focus somewhere else |
 | `gap` | number | `4` | Distance in pixels between the field and the panel |
-| `forcePositionFallback` | boolean | `false` | Set `true` to use the JavaScript positioning even where CSS Anchor Positioning exists. For testing that path |
+| `forcePositionFallback` | boolean | `false` | Set `true` to use the JavaScript positioning even in browsers that support CSS Anchor Positioning. For testing that path — leave it off in production |
 
 ### Color
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `format` | string | `'auto'` | What gets written into the field: `'hex'`, `'rgb'`, `'hsl'`, `'mixed'`, or `'auto'` to keep the format the field already holds |
-| `formats` | array | `['hex','rgb','hsl']` | Which formats the switcher offers, in this order |
+| `format` | string | `'auto'` | What gets written into the field: `'hex'`, `'rgb'`, `'hsl'`, `'mixed'`, or `'auto'` to keep whatever format the field already holds |
+| `formats` | array | `['hex','rgb','hsl']` | Which formats the switcher offers, in this order. Shorten it to offer fewer |
 | `formatToggle` | boolean | `false` | Set `true` to show the format switcher inside the panel |
 | `alpha` | boolean | `true` | Show the opacity slider. Set `false` for opaque colors only |
-| `forceAlpha` | boolean | `false` | Set `true` to always write the alpha channel, even at `1` — `#2a9d8fff` instead of `#2a9d8f` |
+| `forceAlpha` | boolean | `false` | Set `true` to always write the alpha channel, even when it is `1` — you get `#2a9d8fff` instead of `#2a9d8f` |
 | `defaultColor` | string | `'#000000'` | Which color the panel starts on when the field is empty |
-| `swatches` | array | 12 colors | The palette at the bottom of the panel — eight hues around the circle plus four neutrals. Pass your own array, or `[]` to hide it |
-| `swatchesOnly` | boolean | `false` | Set `true` to show nothing but the palette — no area, no sliders. For brand colors |
+| `swatches` | array | 12 colors | The palette shown at the bottom of the panel. Pass your own array of color strings, or an empty array `[]` to hide the palette entirely |
+| `swatchesOnly` | boolean | `false` | Set `true` to show nothing but the palette — no area, no sliders. For brand colors, where free choice is not wanted |
 
 ### Controls
 
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `clearButton` | boolean | `false` | Set `true` to add a button that empties the field |
-| `closeButton` | boolean | `true` | The button that closes the panel. Set `false` to rely on clicking outside or `Esc` |
-| `labels` | object | English | Every visible and assistive string, for translating the panel. See [Localization](#localization) |
+| `closeButton` | boolean | `true` | The button that closes the panel. Set `false` to rely on clicking outside or pressing `Esc` |
+| `labels` | object | English | Every visible and assistive string, for translating the panel. Keys you leave out keep their English default — see [Localization](#localization) |
 
 ### Callbacks
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `onInput` | function | `null` | `(value, instance) => void` — fires on every change, including mid-drag and while typing |
-| `onChange` | function | `null` | `(value, instance) => void` — fires when a selection is complete. Save the value on this one |
+| `onInput` | function | `null` | `(value, instance) => void` — fires on every change, including mid-drag and while typing into the field |
+| `onChange` | function | `null` | `(value, instance) => void` — fires when a selection is complete. This is the one to save a value on |
 | `onOpen` | function | `null` | `(value, instance) => void` — fires after the panel opens |
 | `onClose` | function | `null` | `(value, instance) => void` — fires after the panel closes |
 

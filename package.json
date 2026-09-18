@@ -53,7 +53,8 @@
     "watch": "node build.js --watch",
     "demo": "node build.js && node --run serve",
     "serve": "node scripts/serve.js",
-    "prepack": "node build.js"
+    "check": "node scripts/check-docs.mjs",
+    "prepack": "node scripts/check-docs.mjs && node build.js"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"
