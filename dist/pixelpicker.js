@@ -645,6 +645,10 @@ var PixelPicker = (() => {
       thumb.setAttribute("aria-label", this.options.labels.open);
       thumb.setAttribute("aria-hidden", "true");
       wrapper.appendChild(thumb);
+      const radius = getComputedStyle(this.field).borderRadius;
+      if (radius && radius !== "0px") {
+        wrapper.style.setProperty("--pp-field-radius", radius);
+      }
       this.wrapper = wrapper;
       this.thumb = thumb;
     }
@@ -817,6 +821,7 @@ var PixelPicker = (() => {
         this.wrapper.classList.remove("pp-field--thumb-start", "pp-field--empty");
         this.wrapper.style.removeProperty("--pp-thumb-color");
         this.wrapper.style.removeProperty("--pp-thumb-contrast");
+        this.wrapper.style.removeProperty("--pp-field-radius");
         if (this.createdWrapper) {
           this.wrapper.replaceWith(this.field);
         } else {

@@ -618,13 +618,14 @@
 }
 
 /* Das Farbfeld liegt ueber dem Text und deckt ihn ab. Es bleibt anklickbar,
-   damit das Panel weiterhin ueber einen Klick ins Feld aufgeht. */
+   damit das Panel weiterhin ueber einen Klick ins Feld aufgeht. Der Radius
+   kommt vom Feld (s. fill-behind), damit die Flaeche in dessen Ecken passt. */
 .pp-field--fill .pp-thumb {
-  inset: 0;
+  inset: 1px;
   z-index: 1;
-  border-radius: inherit;
+  border-radius: var(--pp-field-radius, 6px);
   background: var(--pp-thumb-color, transparent);
-  transition: background-color var(--pp-transition);
+  transition: background var(--pp-transition);
 }
 
 /* --- fill-behind: Farbe hinter dem Feld ---------------------------------- */
@@ -634,18 +635,32 @@
 }
 
 /* Ebenso hier: Bleibt der Feldhintergrund deckend, verdeckt er die Farbe,
-   die hinter ihm liegt. */
+   die hinter ihm liegt. Die Schrift wechselt mit der Helligkeit der Farbe
+   zwischen Schwarz und Weiss -- sonst steht dunkler Text auf dunklem Grund. */
 .pp-field--fill-behind.pp-field--fill-behind input {
   position: relative;
   z-index: 1;
   background-color: transparent;
   background-image: none;
+  color: var(--pp-thumb-contrast, inherit);
+  transition: color var(--pp-transition);
 }
 
+.pp-field--fill-behind.pp-field--fill-behind input::placeholder {
+  color: var(--pp-thumb-contrast, inherit);
+  opacity: 0.6;
+}
+
+/* Die Farbflaeche liegt hinter dem Feld und muss dessen Ecken folgen --
+   sonst stehen ihre eckigen Ecken hinter den runden des Feldes hervor.
+   CSS kann den Radius des Feldes nicht auslesen, deshalb die Variable:
+   Sie steht auf einem ueblichen Wert und wird dort gesetzt, wo das Feld
+   einen anderen traegt.
+     .my-field { --pp-field-radius: 12px; } */
 .pp-field--fill-behind .pp-thumb {
-  inset: 0;
+  inset: 1px;
   z-index: 0;
-  border-radius: inherit;
+  border-radius: var(--pp-field-radius, 6px);
 }
 
 /* --- none: kein Farbfeld ------------------------------------------------- */

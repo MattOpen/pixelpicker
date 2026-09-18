@@ -86,6 +86,15 @@ export class PickerInstance {
 
     wrapper.appendChild(thumb);
 
+    // Den Eckenradius des Feldes an den Wrapper durchreichen. Die Varianten,
+    // die eine Flaeche hinter oder ueber dem Feld zeichnen, brauchen ihn --
+    // CSS kann ihn von dort aus nicht auslesen, und ohne ihn stehen eckige
+    // Ecken hinter den runden des Feldes hervor.
+    const radius = getComputedStyle(this.field).borderRadius;
+    if (radius && radius !== '0px') {
+      wrapper.style.setProperty('--pp-field-radius', radius);
+    }
+
     this.wrapper = wrapper;
     this.thumb = thumb;
   }
@@ -310,6 +319,7 @@ export class PickerInstance {
       this.wrapper.classList.remove('pp-field--thumb-start', 'pp-field--empty');
       this.wrapper.style.removeProperty('--pp-thumb-color');
       this.wrapper.style.removeProperty('--pp-thumb-contrast');
+      this.wrapper.style.removeProperty('--pp-field-radius');
 
       if (this.createdWrapper) {
         this.wrapper.replaceWith(this.field);
