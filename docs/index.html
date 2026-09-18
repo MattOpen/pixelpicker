@@ -23,9 +23,9 @@
     --code-bg: #f2f4f7;
     --radius: 10px;
 
-    /* Die knallige Palette. Sie traegt den Hero und die Bubbles -- bei einem
-       Colorpicker ist Farbe kein Schmuck, sondern das Thema selbst.
-       Gewaehlt von Matt am 2026-09-18 aus zwei Vorschlaegen. */
+    /* Die Palette traegt Hero, Bubbles und Akzente -- bei einem Colorpicker
+       ist Farbe kein Schmuck, sondern das Thema selbst. Vier Stimmungen
+       stehen zur Wahl, der Schalter unten rechts wechselt sie. */
     --pop-pink: #f72585;
     --pop-yellow: #ffbe0b;
     --pop-green: #4cc9f0;
@@ -34,6 +34,87 @@
     --pop-cyan: #b5179e;
     --pop-violet: #7209b7;
     --pop-deep: #3a0ca3;
+
+    --hero-1: #ffe9f3;
+    --hero-2: #fff1d6;
+    --hero-3: #ebe6ff;
+    --hero-base: #fffdfb;
+    --title-gradient: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
+    --cta-gradient: linear-gradient(135deg, #4361ee, #7209b7);
+    --cta-ink: #fff;
+    --cta-shadow: 67 97 238;
+  }
+
+  /* --- Die anderen drei Stimmungen ---------------------------------------
+     Jede setzt dieselben Variablen neu; alles Uebrige liest nur daraus. */
+
+  /* Gebrochene Warmtoene: Terrakotta, Karamell, Schokolade. Satt statt
+     grell -- Farben, die eine Oberflaeche zu haben scheinen. */
+  :root[data-palette='earth'] {
+    --pop-pink: #c65d3b;
+    --pop-yellow: #c88a4b;
+    --pop-green: #87a878;
+    --pop-blue: #6f4e37;
+    --pop-orange: #a0522d;
+    --pop-cyan: #8c6a56;
+    --pop-violet: #7d5a50;
+    --pop-deep: #4a3428;
+    --accent: #a0522d;
+
+    --hero-1: #f6ece2;
+    --hero-2: #faf3e7;
+    --hero-3: #f2e8e0;
+    --hero-base: #fdfaf6;
+    --title-gradient: linear-gradient(100deg, #6f4e37 0%, #a0522d 42%, #c65d3b 74%, #c88a4b 100%);
+    --cta-gradient: linear-gradient(135deg, #a0522d, #6f4e37);
+    --cta-ink: #fff;
+    --cta-shadow: 160 82 45;
+  }
+
+  /* Tief und edel: Petrol, Smaragd, Aubergine. Dunklere Buntwerte, die
+     ohne Neon auskommen. */
+  :root[data-palette='jewel'] {
+    --pop-pink: #9e2a2b;
+    --pop-yellow: #d4a017;
+    --pop-green: #0f7b6c;
+    --pop-blue: #1d3557;
+    --pop-orange: #bc6c25;
+    --pop-cyan: #2a6f97;
+    --pop-violet: #5b2c6f;
+    --pop-deep: #14213d;
+    --accent: #1d3557;
+
+    --hero-1: #e4ecf2;
+    --hero-2: #fdf3e0;
+    --hero-3: #e9e4f0;
+    --hero-base: #fbfcfd;
+    --title-gradient: linear-gradient(100deg, #1d3557 0%, #0f7b6c 40%, #5b2c6f 72%, #9e2a2b 100%);
+    --cta-gradient: linear-gradient(135deg, #1d3557, #0f7b6c);
+    --cta-ink: #fff;
+    --cta-shadow: 29 53 87;
+  }
+
+  /* Eierschale und Salbei: die leiseste Variante, fuer alles, was neben
+     viel Text steht. */
+  :root[data-palette='shell'] {
+    --pop-pink: #d4a59a;
+    --pop-yellow: #e8dcc8;
+    --pop-green: #a3b18a;
+    --pop-blue: #7d8597;
+    --pop-orange: #dda15e;
+    --pop-cyan: #a5a58d;
+    --pop-violet: #9c89b8;
+    --pop-deep: #52565e;
+    --accent: #6b705c;
+
+    --hero-1: #f4ede4;
+    --hero-2: #faf6ef;
+    --hero-3: #eef0e9;
+    --hero-base: #fdfcf9;
+    --title-gradient: linear-gradient(100deg, #52565e 0%, #6b705c 40%, #a3b18a 72%, #dda15e 100%);
+    --cta-gradient: linear-gradient(135deg, #6b705c, #52565e);
+    --cta-ink: #fff;
+    --cta-shadow: 107 112 92;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -127,11 +208,12 @@
     margin: 0 -16px 48px;
     padding: 72px 16px 80px;
     background:
-      radial-gradient(circle at 15% 20%, #ffe9f3 0%, transparent 55%),
-      radial-gradient(circle at 85% 15%, #fff1d6 0%, transparent 50%),
-      radial-gradient(circle at 70% 90%, #ebe6ff 0%, transparent 55%),
-      #fffdfb;
+      radial-gradient(circle at 15% 20%, var(--hero-1) 0%, transparent 55%),
+      radial-gradient(circle at 85% 15%, var(--hero-2) 0%, transparent 50%),
+      radial-gradient(circle at 70% 90%, var(--hero-3) 0%, transparent 55%),
+      var(--hero-base);
     text-align: center;
+    transition: background 200ms ease;
   }
 
   /* Die Bubbles: Farbfelder in verschiedenen Groessen, leicht durchscheinend
@@ -155,7 +237,7 @@
     font-size: clamp(2.4rem, 8vw, 4rem);
     letter-spacing: -0.035em;
     font-weight: 800;
-    background: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
+    background: var(--title-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -189,7 +271,10 @@
     backdrop-filter: blur(4px);
   }
 
-  .badge--ok { border-color: #4361ee; color: #2f49c9; }
+  .badge--ok {
+    border-color: var(--accent);
+    color: color-mix(in srgb, var(--accent) 85%, #000);
+  }
 
   .cta { position: relative; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 
@@ -205,12 +290,12 @@
   .cta a:hover { transform: translateY(-1px); }
 
   .cta__primary {
-    background: linear-gradient(135deg, #4361ee, #7209b7);
-    color: #fff;
-    box-shadow: 0 4px 14px rgb(67 97 238 / 38%);
+    background: var(--cta-gradient);
+    color: var(--cta-ink);
+    box-shadow: 0 4px 14px rgb(var(--cta-shadow) / 38%);
   }
 
-  .cta__primary:hover { box-shadow: 0 6px 20px rgb(67 97 238 / 48%); }
+  .cta__primary:hover { box-shadow: 0 6px 20px rgb(var(--cta-shadow) / 48%); }
 
   .cta__ghost {
     border: 1px solid color-mix(in srgb, var(--pop-deep) 18%, transparent);
@@ -542,6 +627,48 @@
     margin: 16px 0 18px;
   }
 
+  /* --- Themenwechsler ----------------------------------------------------
+     Bleibt dauerhaft: Auf der Seite eines Colorpickers ist eine Farbwahl
+     kein Behelf, sondern das Thema. Die Knoepfe zeigen die Stimmung, statt
+     sie zu benennen -- ein Farbfeld sagt mehr als ein Name. */
+  .palette-switch {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 60;
+    display: flex;
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgb(16 24 40 / 12%);
+  }
+
+  .palette-switch button {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background: var(--swatch);
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+
+  .palette-switch button:hover { transform: scale(1.12); }
+
+  .palette-switch button[aria-pressed='true'] {
+    border-color: var(--text);
+    transform: scale(1.12);
+  }
+
+  @media (max-width: 480px) {
+    .palette-switch { right: 12px; bottom: 12px; padding: 5px; gap: 4px; }
+    .palette-switch button { width: 22px; height: 22px; }
+  }
+
   /* --- Der Beweis: abgeschnitten gegen Top Layer -------------------------- */
 
   .clip-compare {
@@ -681,6 +808,17 @@
 </style>
 </head>
 <body>
+
+<div class="palette-switch" role="group" aria-label="Color theme">
+  <button type="button" data-palette="" aria-pressed="true" title="Vivid"
+          style="--swatch:linear-gradient(135deg,#4361ee,#f72585)"></button>
+  <button type="button" data-palette="earth" aria-pressed="false" title="Earth"
+          style="--swatch:linear-gradient(135deg,#6f4e37,#c88a4b)"></button>
+  <button type="button" data-palette="jewel" aria-pressed="false" title="Jewel"
+          style="--swatch:linear-gradient(135deg,#1d3557,#0f7b6c)"></button>
+  <button type="button" data-palette="shell" aria-pressed="false" title="Shell"
+          style="--swatch:linear-gradient(135deg,#a3b18a,#e8dcc8)"></button>
+</div>
 
 <nav class="topbar">
   <span class="topbar__brand">
@@ -1281,6 +1419,35 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
       `left:${b.x}%;top:${b.y}%;width:${b.size}px;height:${b.size}px;` +
       `background:${b.color};opacity:${b.alpha};transform:translate(-50%,-50%)`;
     bubbleHost.appendChild(el);
+  }
+
+  // --- Themenwechsler ------------------------------------------------------
+  const paletteButtons = [...document.querySelectorAll('.palette-switch button')];
+
+  const applyPalette = (name) => {
+    if (name) document.documentElement.dataset.palette = name;
+    else delete document.documentElement.dataset.palette;
+
+    for (const btn of paletteButtons) {
+      btn.setAttribute('aria-pressed', String((btn.dataset.palette || '') === name));
+    }
+    try {
+      localStorage.setItem('pp-palette', name);
+    } catch {
+      // Privater Modus oder blockierter Speicher -- die Wahl gilt dann nur
+      // fuer diesen Besuch. Kein Grund, irgendetwas zu melden.
+    }
+  };
+
+  for (const btn of paletteButtons) {
+    btn.addEventListener('click', () => applyPalette(btn.dataset.palette || ''));
+  }
+
+  try {
+    const saved = localStorage.getItem('pp-palette');
+    if (saved !== null) applyPalette(saved);
+  } catch {
+    // s. oben
   }
 
   // --- Reiter und Aufsetzcode ----------------------------------------------

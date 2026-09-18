@@ -836,18 +836,20 @@ var PixelPicker = (() => {
 
   // src/options.js
   var DEFAULT_SWATCHES = [
-    "#264653",
-    "#2a9d8f",
-    "#8ab17d",
-    "#e9c46a",
-    "#f4a261",
-    "#e76f51",
-    "#d62828",
-    "#023e8a",
-    "#0077b6",
-    "#00b4d8",
-    "#48cae4",
-    "#ffffff"
+    // Bunt, im Kreis von Rot nach Violett.
+    "#e5484d",
+    "#f76b15",
+    "#ffb224",
+    "#46a758",
+    "#12a594",
+    "#0090ff",
+    "#3e63dd",
+    "#8e4ec6",
+    // Neutral, von dunkel nach hell. Kein reines Weiss -- es verschwindet.
+    "#1c2024",
+    "#60646c",
+    "#b9bbc6",
+    "#f0f0f3"
   ];
   var DEFAULTS = {
     // --- Darstellung ---------------------------------------------------------

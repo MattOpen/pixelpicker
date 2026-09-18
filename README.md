@@ -116,7 +116,7 @@ change.
 | `alpha` | boolean | `true` | Show the opacity slider. Set `false` for opaque colors only |
 | `forceAlpha` | boolean | `false` | Set `true` to always write the alpha channel, even at `1` — `#2a9d8fff` instead of `#2a9d8f` |
 | `defaultColor` | string | `'#000000'` | Which color the panel starts on when the field is empty |
-| `swatches` | array | 12 colors | The palette at the bottom of the panel. Pass your own array, or `[]` to hide it |
+| `swatches` | array | 12 colors | The palette at the bottom of the panel — eight hues around the circle plus four neutrals. Pass your own array, or `[]` to hide it |
 | `swatchesOnly` | boolean | `false` | Set `true` to show nothing but the palette — no area, no sliders. For brand colors |
 
 ### Controls
