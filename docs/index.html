@@ -19,9 +19,20 @@
     --border: #e1e4e9;
     --text: #1d2129;
     --muted: #6b7280;
-    --accent: #2a9d8f;
+    --accent: #0a9396;
     --code-bg: #f2f4f7;
     --radius: 10px;
+
+    /* Die knallige Palette. Sie traegt den Hero und die Bubbles -- bei einem
+       Colorpicker ist Farbe kein Schmuck, sondern das Thema selbst. */
+    --pop-pink: #ef476f;
+    --pop-yellow: #ffd166;
+    --pop-green: #06d6a0;
+    --pop-blue: #118ab2;
+    --pop-orange: #ff6b35;
+    --pop-cyan: #00b4d8;
+    --pop-violet: #7209b7;
+    --pop-deep: #073b4c;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -60,32 +71,153 @@
 
   .wrap { max-width: 900px; margin: 0 auto; }
 
-  header {
-    padding: 56px 0 32px;
+  /* --- Kopfleiste ------------------------------------------------------- */
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
   }
 
-  h1 {
-    margin: 0 0 8px;
-    font-size: clamp(2rem, 6vw, 2.75rem);
-    letter-spacing: -0.02em;
+  .topbar__brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-right: auto;
   }
 
-  .tagline { margin: 0 0 20px; color: var(--muted); font-size: 1.05rem; }
+  /* Das Markenzeichen ist ein Farbfeld -- dasselbe, was der Picker ausgibt. */
+  .topbar__mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--pop-green), var(--pop-blue));
+  }
 
-  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
-
-  .badge {
-    padding: 3px 10px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--surface);
-    font-size: 0.78rem;
+  .topbar__version {
+    font-size: 0.72rem;
+    font-weight: 500;
     color: var(--muted);
   }
 
-  .badge--ok { border-color: var(--accent); color: var(--accent); }
+  .topbar__nav { display: flex; gap: 18px; font-size: 0.88rem; }
+  .topbar__nav a { color: var(--muted); text-decoration: none; }
+  .topbar__nav a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .topbar__version { display: none; }
+    .topbar__nav { gap: 12px; font-size: 0.8rem; }
+  }
+
+  /* --- Hero ------------------------------------------------------------- */
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    margin: 0 -16px 48px;
+    padding: 72px 16px 80px;
+    background:
+      radial-gradient(circle at 15% 20%, #e8fbf5 0%, transparent 55%),
+      radial-gradient(circle at 85% 15%, #fff4e0 0%, transparent 50%),
+      radial-gradient(circle at 70% 90%, #e6f6fd 0%, transparent 55%),
+      #fdfdfc;
+    text-align: center;
+  }
+
+  /* Die Bubbles: Farbfelder in verschiedenen Groessen, leicht durchscheinend
+     und weich gezeichnet. Sie liegen hinter dem Text, nie darueber. */
+  .hero__bubbles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.75;
+    filter: blur(0.3px);
+  }
+
+  h1 {
+    position: relative;
+    margin: 0 0 14px;
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    letter-spacing: -0.035em;
+    font-weight: 800;
+    background: linear-gradient(100deg, #0aa8b0 0%, var(--pop-green) 38%, var(--pop-blue) 68%, var(--pop-violet) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .tagline {
+    position: relative;
+    max-width: 30em;
+    margin: 0 auto 26px;
+    color: #4a5568;
+    font-size: clamp(1rem, 2.4vw, 1.15rem);
+  }
+
+  .badges {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+
+  .badge {
+    padding: 5px 13px;
+    border: 1px solid color-mix(in srgb, var(--pop-deep) 14%, transparent);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 72%);
+    font-size: 0.79rem;
+    font-weight: 500;
+    color: #3d4a5c;
+    backdrop-filter: blur(4px);
+  }
+
+  .badge--ok { border-color: var(--pop-green); color: #04795b; }
+
+  .cta { position: relative; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+  .cta a {
+    padding: 11px 22px;
+    border-radius: 9px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .cta a:hover { transform: translateY(-1px); }
+
+  .cta__primary {
+    background: linear-gradient(135deg, var(--pop-green), #05b386);
+    color: #04372b;
+    box-shadow: 0 4px 14px rgb(6 214 160 / 35%);
+  }
+
+  .cta__primary:hover { box-shadow: 0 6px 20px rgb(6 214 160 / 45%); }
+
+  .cta__ghost {
+    border: 1px solid color-mix(in srgb, var(--pop-deep) 18%, transparent);
+    background: rgb(255 255 255 / 70%);
+    color: var(--pop-deep);
+  }
+
+  .cta__ghost:hover { border-color: var(--pop-blue); color: var(--pop-blue); }
 
   h2 {
     margin: 48px 0 6px;
@@ -179,6 +311,65 @@
   .at { color: #ffcb6b; }
   .pu { color: #89ddff; }
 
+  /* --- Demo mit Reitern -------------------------------------------------- */
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 20px 0 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 9px 15px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease;
+  }
+
+  .tab:hover { color: var(--text); }
+
+  .tab[aria-selected='true'] {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .tab-panel { padding-top: 22px; }
+  .tab-panel[hidden] { display: none; }
+
+  /* Der Knopf, der den Aufsetzcode zeigt. Er steht bei jeder Demo, damit
+     niemand raten muss, wie das Gezeigte konfiguriert ist. */
+  .code-btn {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.12s ease, color 0.12s ease;
+  }
+
+  .code-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .demo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 16px;
+  }
+
   table {
     width: 100%;
     margin: 14px 0 8px;
@@ -254,23 +445,142 @@
   }
 
   a { color: var(--accent); }
+
+  /* Der Hero behaelt seine Farben auch im dunklen Schema: Die Bubbles sind
+     der Inhalt, nicht Dekor -- auf dunklem Grund verloeschen sie. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .hero { color-scheme: light; }
+  }
+
+  /* --- Farbvariante 2 zum Vergleich --------------------------------------
+     Waermer und satter als Variante 1: Koralle, Bernstein und Violett statt
+     Mint und Tuerkis. Der Umschalter unten rechts setzt data-palette="warm".
+     Nach der Entscheidung faellt die unterlegene Variante ersatzlos weg. */
+  :root[data-palette='warm'] {
+    --pop-pink: #f72585;
+    --pop-yellow: #ffbe0b;
+    --pop-green: #4cc9f0;
+    --pop-blue: #4361ee;
+    --pop-orange: #fb5607;
+    --pop-cyan: #b5179e;
+    --pop-violet: #7209b7;
+    --pop-deep: #3a0ca3;
+    --accent: #4361ee;
+  }
+
+  :root[data-palette='warm'] .hero {
+    background:
+      radial-gradient(circle at 15% 20%, #ffe9f3 0%, transparent 55%),
+      radial-gradient(circle at 85% 15%, #fff1d6 0%, transparent 50%),
+      radial-gradient(circle at 70% 90%, #ebe6ff 0%, transparent 55%),
+      #fffdfb;
+  }
+
+  :root[data-palette='warm'] h1 {
+    background: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  :root[data-palette='warm'] .cta__primary {
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    color: #fff;
+    box-shadow: 0 4px 14px rgb(67 97 238 / 38%);
+  }
+
+  :root[data-palette='warm'] .badge--ok { border-color: #4361ee; color: #2f49c9; }
+
+  /* Der Umschalter selbst -- er verschwindet mit der Entscheidung. */
+  .palette-switch {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 60;
+    display: flex;
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
+  }
+
+  .palette-switch button {
+    padding: 6px 13px;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .palette-switch button[aria-pressed='true'] {
+    background: var(--accent);
+    color: #fff;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<header>
+<div class="palette-switch" role="group" aria-label="Color palette">
+  <button type="button" data-palette="cool" aria-pressed="true">Version 1</button>
+  <button type="button" data-palette="warm" aria-pressed="false">Version 2</button>
+</div>
+
+<nav class="topbar">
+  <span class="topbar__brand">
+    <span class="topbar__mark"></span>
+    pixelpicker
+    <span class="topbar__version">v1.0.0</span>
+  </span>
+  <span class="topbar__nav">
+    <a href="#demo">Demo</a>
+    <a href="#install">Install</a>
+    <a href="#options">Options</a>
+    <a href="https://www.npmjs.com/package/pixelpicker">npm</a>
+    <a href="https://github.com/MattOpen/pixelpicker">GitHub</a>
+  </span>
+</nav>
+
+<header class="hero">
+  <div class="hero__bubbles" id="hero-bubbles" aria-hidden="true"></div>
   <h1>pixelpicker</h1>
-  <p class="tagline">A lightweight, dependency-free color picker. The panel is a helper — never a replacement for the input field.</p>
+  <p class="tagline">A lightweight, dependency-free color picker for text inputs. The panel is a helper — never a replacement for the field.</p>
   <div class="badges">
+    <span class="badge">No jQuery</span>
+    <span class="badge">Zero dependencies</span>
+    <span class="badge">ESM · CJS · IIFE</span>
     <span class="badge" id="badge-size">~20 KB minified</span>
-    <span class="badge">No dependencies</span>
     <span class="badge" id="badge-popover">Popover API: checking…</span>
     <span class="badge" id="badge-anchor">Anchor Positioning: checking…</span>
+    <span class="badge">MIT License</span>
+  </div>
+  <div class="cta">
+    <a class="cta__primary" href="#install">Get started</a>
+    <a class="cta__ghost" href="https://www.npmjs.com/package/pixelpicker">View on npm</a>
+    <a class="cta__ghost" href="https://github.com/MattOpen/pixelpicker">View on GitHub</a>
   </div>
 </header>
 
-<h2>1 · The input stays yours</h2>
+<div class="wrap">
+
+<h2 id="demo">Live demo</h2>
+<p class="lead">Every tab shows a working picker. <strong>Show setup code</strong> reveals exactly how it was configured.</p>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true" aria-controls="tab-typing" id="t-typing">Typing</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-thumbs" id="t-thumbs">Thumb styles</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-position" id="t-position">Positioning</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-variants" id="t-variants">Panel variants</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="tab-lifecycle" id="t-lifecycle">Lifecycle</button>
+</div>
+
+<!-- ── Tab 1: Typing ── -->
+<div class="tab-panel" role="tabpanel" id="tab-typing" aria-labelledby="t-typing">
 <p class="lead">Click the field and type a hex value directly — <code>#2a9d8f</code>, <code>rebeccapurple</code>, <code>rgb(42 157 143)</code>. The panel follows along. The focus never leaves the field.</p>
 
 <div class="card">
@@ -279,11 +589,26 @@
   <div class="log" id="log-typing">Waiting…</div>
 </div>
 
+<div class="demo-controls">
+  <button class="code-btn" data-code="code-typing">Show setup code</button>
+</div>
+
+<pre id="code-typing" hidden><code><span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">id</span>=<span class="str">"demo-typing"</span> <span class="at">value</span>=<span class="str">"#2a9d8f"</span><span class="pu">&gt;</span>
+
+<span class="kw">const</span> [picker] = <span class="fn">create</span>(<span class="str">'#demo-typing'</span>, {
+  <span class="at">onInput</span>: (value) <span class="kw">=&gt;</span> {
+    <span class="cm">// Faellt bei jeder Aenderung -- auch beim Tippen ins Feld.</span>
+    console.<span class="fn">log</span>(value);
+  }
+});</code></pre>
+
 <div class="note">
   <strong>Why this matters.</strong> The predecessor called <code>focus()</code> on its own internal input when the field was clicked, so anything the user typed went into the panel instead of the field. Here the field keeps the focus and the caret; the panel only ever reads from it.
 </div>
+</div>
 
-<h2>2 · Thumb styles</h2>
+<!-- ── Tab 2: Thumb styles ── -->
+<div class="tab-panel" role="tabpanel" id="tab-thumbs" aria-labelledby="t-thumbs" hidden>
 <p class="lead">Six ways to show the selected color in the field, chosen with the <code>thumbStyle</code> option.</p>
 
 <div class="grid">
@@ -330,7 +655,24 @@
   </div>
 </div>
 
-<h2>3 · Positioning</h2>
+<div class="demo-controls">
+  <button class="code-btn" data-code="code-thumbs">Show setup code</button>
+</div>
+
+<pre id="code-thumbs" hidden><code><span class="cm">&lt;!-- Per Attribut, ohne eigenen JavaScript-Aufruf je Feld --&gt;</span>
+<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"circle"</span> <span class="at">value</span>=<span class="str">"#2a9d8f"</span><span class="pu">&gt;</span>
+<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"fill"</span> <span class="at">value</span>=<span class="str">"#e76f51"</span><span class="pu">&gt;</span>
+
+<span class="cm">// …oder fuer alle auf einmal, mit einer Voreinstellung:</span>
+<span class="fn">create</span>(<span class="str">'.demo-thumb'</span>, { <span class="at">thumbStyle</span>: <span class="str">'bar'</span> });
+
+<span class="cm">// Die Seite auf der anderen Seite des Feldes:</span>
+<span class="pu">&lt;</span><span class="fn">input</span> <span class="at">type</span>=<span class="str">"text"</span> <span class="at">data-pp-thumb</span>=<span class="str">"bar"</span>
+       <span class="at">data-pp-thumb-position</span>=<span class="str">"start"</span> <span class="at">value</span>=<span class="str">"#0077b6"</span><span class="pu">&gt;</span></code></pre>
+</div>
+
+<!-- ── Tab 3: Positioning ── -->
+<div class="tab-panel" role="tabpanel" id="tab-position" aria-labelledby="t-position" hidden>
 <p class="lead">The panel lives in the top layer, so no <code>z-index</code> can bury it and no ancestor with <code>overflow: hidden</code> can clip it. Scroll the box below — the panel keeps up.</p>
 
 <div class="scroll-demo">
@@ -348,7 +690,23 @@
   <span id="fallback-state" style="font-size:0.83rem;color:var(--muted)">Using: checking…</span>
 </div>
 
-<h2>4 · Panel variants</h2>
+<div class="demo-controls">
+  <button class="code-btn" data-code="code-position">Show setup code</button>
+</div>
+
+<pre id="code-position" hidden><code><span class="cm">// Nichts zu konfigurieren -- die Positionierung ist eingebaut.</span>
+<span class="fn">create</span>(<span class="str">'#demo-scroll'</span>);
+
+<span class="cm">// Abstand zwischen Feld und Panel, falls noetig:</span>
+<span class="fn">create</span>(<span class="str">'#demo-scroll'</span>, { <span class="at">gap</span>: <span class="kw">12</span> });
+
+<span class="cm">// Den JavaScript-Weg erzwingen -- nur zum Pruefen. Sonst rechnet</span>
+<span class="cm">// der Browser selbst, sofern er Anchor Positioning kennt.</span>
+<span class="fn">create</span>(<span class="str">'#demo-scroll'</span>, { <span class="at">forcePositionFallback</span>: <span class="kw">true</span> });</code></pre>
+</div>
+
+<!-- ── Tab 4: Panel variants ── -->
+<div class="tab-panel" role="tabpanel" id="tab-variants" aria-labelledby="t-variants" hidden>
 <div class="grid">
   <div class="card">
     <h3>Format switcher</h3>
@@ -382,7 +740,26 @@
   </div>
 </div>
 
-<h2>5 · Lifecycle</h2>
+<div class="demo-controls">
+  <button class="code-btn" data-code="code-variants">Show setup code</button>
+</div>
+
+<pre id="code-variants" hidden><code><span class="fn">create</span>(<span class="str">'#demo-format'</span>,   { <span class="at">formatToggle</span>: <span class="kw">true</span> });
+<span class="fn">create</span>(<span class="str">'#demo-swatches'</span>, { <span class="at">swatchesOnly</span>: <span class="kw">true</span> });
+<span class="fn">create</span>(<span class="str">'#demo-noalpha'</span>,  { <span class="at">alpha</span>: <span class="kw">false</span> });
+<span class="fn">create</span>(<span class="str">'#demo-pill'</span>,     { <span class="at">theme</span>: <span class="str">'pill'</span> });
+<span class="fn">create</span>(<span class="str">'#demo-dark'</span>,     { <span class="at">themeMode</span>: <span class="str">'dark'</span> });
+<span class="fn">create</span>(<span class="str">'#demo-clear'</span>,    { <span class="at">clearButton</span>: <span class="kw">true</span> });
+
+<span class="cm">// Eigene Farbfelder statt der zwoelf Standardwerte:</span>
+<span class="fn">create</span>(<span class="str">'#brand-color'</span>, {
+  <span class="at">swatches</span>: [<span class="str">'#06d6a0'</span>, <span class="str">'#118ab2'</span>, <span class="str">'#ef476f'</span>, <span class="str">'#ffd166'</span>],
+  <span class="at">swatchesOnly</span>: <span class="kw">true</span>
+});</code></pre>
+</div>
+
+<!-- ── Tab 5: Lifecycle ── -->
+<div class="tab-panel" role="tabpanel" id="tab-lifecycle" aria-labelledby="t-lifecycle" hidden>
 <p class="lead">Every instance can be taken apart again. After <code>destroy()</code> the field is indistinguishable from one that never had a picker — no listeners, no wrapper, no leftover nodes.</p>
 
 <div class="card">
@@ -397,7 +774,23 @@
   <div class="log" id="log-lifecycle">Ready.</div>
 </div>
 
-<h2>6 · Getting started</h2>
+<div class="demo-controls">
+  <button class="code-btn" data-code="code-lifecycle">Show setup code</button>
+</div>
+
+<pre id="code-lifecycle" hidden><code><span class="kw">const</span> [picker] = <span class="fn">create</span>(<span class="str">'#demo-lifecycle'</span>);
+
+picker.<span class="fn">setValue</span>(<span class="str">'#d62828'</span>);   <span class="cm">// Wert von aussen setzen</span>
+picker.<span class="fn">getValue</span>();             <span class="cm">// '#d62828'</span>
+picker.<span class="fn">open</span>();                 <span class="cm">// Panel oeffnen</span>
+picker.<span class="fn">close</span>({ revert: <span class="kw">true</span> }); <span class="cm">// schliessen, Wert zuruecknehmen</span>
+
+<span class="fn">getAll</span>().length;             <span class="cm">// wie viele Instanzen leben</span>
+picker.<span class="fn">destroy</span>();              <span class="cm">// diese eine abbauen</span>
+<span class="fn">destroy</span>(<span class="str">'#demo-lifecycle'</span>);   <span class="cm">// …oder ueber das Feld</span></code></pre>
+</div>
+
+<h2 id="install">Getting started</h2>
 
 <h3>As a module</h3>
 <pre><code><span class="kw">import</span> { <span class="fn">create</span> } <span class="kw">from</span> <span class="str">'pixelpicker'</span>;
@@ -420,7 +813,7 @@
 
 <span class="pu">&lt;</span><span class="fn">script</span><span class="pu">&gt;</span><span class="fn">PixelPicker</span>.<span class="fn">auto</span>();<span class="pu">&lt;/</span><span class="fn">script</span><span class="pu">&gt;</span></code></pre>
 
-<h2>7 · Options</h2>
+<h2 id="options">Options</h2>
 <p class="lead">Every option can be passed to <code>create()</code> or set per field as a <code>data-</code> attribute. Attributes win, because they are the more specific source.</p>
 
 <h3>Appearance</h3>
@@ -478,7 +871,7 @@
   <strong>Many options on one field?</strong> Use <code>data-pp-config</code> with a JSON object instead of a long list of attributes: <code>data-pp-config='{"thumbStyle":"circle","alpha":false}'</code>. Individual attributes still take precedence.
 </div>
 
-<h2>8 · Events</h2>
+<h2>Events</h2>
 <p class="lead">Each instance dispatches events on its own field, so they bubble and can be delegated. Native <code>input</code> and <code>change</code> events fire as well — forms and validators see exactly what they would see from typing.</p>
 
 <pre><code>field.<span class="fn">addEventListener</span>(<span class="str">'pixelpicker:change'</span>, (event) <span class="kw">=&gt;</span> {
@@ -496,7 +889,7 @@
   </tbody>
 </table>
 
-<h2>9 · API</h2>
+<h2>API</h2>
 <table>
   <thead><tr><th>Function</th><th>Returns</th><th>Meaning</th></tr></thead>
   <tbody>
@@ -520,7 +913,7 @@
   </tbody>
 </table>
 
-<h2>10 · Keyboard</h2>
+<h2>Keyboard</h2>
 <table>
   <thead><tr><th>Key</th><th>Where</th><th>Action</th></tr></thead>
   <tbody>
@@ -544,6 +937,82 @@
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
+
+  // --- Hero bubbles --------------------------------------------------------
+  // Feste Positionen statt Zufall: Der Hero soll bei jedem Aufruf gleich
+  // aussehen, und die Bubbles muessen die Raender halten, damit sie dem Text
+  // nicht in die Quere kommen. Werte in Prozent der Hero-Flaeche.
+  const BUBBLES = [
+    { x: 6,  y: 16, size: 108, color: 'var(--pop-green)',  alpha: 0.5 },
+    { x: 14, y: 68, size: 62,  color: 'var(--pop-yellow)', alpha: 0.72 },
+    { x: 2,  y: 46, size: 38,  color: 'var(--pop-blue)',   alpha: 0.45 },
+    { x: 22, y: 34, size: 26,  color: 'var(--pop-orange)', alpha: 0.65 },
+    { x: 9,  y: 88, size: 44,  color: 'var(--pop-cyan)',   alpha: 0.5 },
+    { x: 88, y: 20, size: 96,  color: 'var(--pop-orange)', alpha: 0.45 },
+    { x: 82, y: 74, size: 70,  color: 'var(--pop-cyan)',   alpha: 0.55 },
+    { x: 94, y: 48, size: 34,  color: 'var(--pop-pink)',   alpha: 0.6 },
+    { x: 71, y: 12, size: 28,  color: 'var(--pop-violet)', alpha: 0.4 },
+    { x: 90, y: 84, size: 52,  color: 'var(--pop-green)',  alpha: 0.5 },
+    { x: 46, y: 93, size: 22,  color: 'var(--pop-pink)',   alpha: 0.5 },
+    { x: 60, y: 6,  size: 18,  color: 'var(--pop-yellow)', alpha: 0.7 }
+  ];
+
+  const bubbleHost = $('hero-bubbles');
+  for (const b of BUBBLES) {
+    const el = document.createElement('span');
+    el.className = 'bubble';
+    el.style.cssText =
+      `left:${b.x}%;top:${b.y}%;width:${b.size}px;height:${b.size}px;` +
+      `background:${b.color};opacity:${b.alpha};transform:translate(-50%,-50%)`;
+    bubbleHost.appendChild(el);
+  }
+
+  // --- Farbvariante umschalten (nur zum Vergleich, faellt danach weg) ------
+  for (const btn of document.querySelectorAll('.palette-switch button')) {
+    btn.addEventListener('click', () => {
+      const warm = btn.dataset.palette === 'warm';
+      document.documentElement.dataset.palette = warm ? 'warm' : 'cool';
+      for (const other of document.querySelectorAll('.palette-switch button')) {
+        other.setAttribute('aria-pressed', String(other === btn));
+      }
+    });
+  }
+
+  // --- Reiter und Aufsetzcode ----------------------------------------------
+  const tabs = [...document.querySelectorAll('.tab')];
+
+  function selectTab(tab) {
+    for (const other of tabs) {
+      const panel = document.getElementById(other.getAttribute('aria-controls'));
+      const active = other === tab;
+      other.setAttribute('aria-selected', String(active));
+      panel.hidden = !active;
+    }
+  }
+
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => selectTab(tab));
+
+    // Pfeiltasten wandern durch die Reiter -- so erwartet es jeder,
+    // der die Seite ohne Maus bedient.
+    tab.addEventListener('keydown', (event) => {
+      const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      const next = tabs[(tabs.indexOf(tab) + step + tabs.length) % tabs.length];
+      selectTab(next);
+      next.focus();
+      event.preventDefault();
+    });
+  }
+
+  for (const btn of document.querySelectorAll('.code-btn')) {
+    btn.addEventListener('click', () => {
+      const pre = document.getElementById(btn.dataset.code);
+      if (!pre) return;
+      pre.hidden = !pre.hidden;
+      btn.textContent = pre.hidden ? 'Show setup code' : 'Hide setup code';
+    });
+  }
 
   // --- Capability badges ---------------------------------------------------
   const popoverOk = PixelPicker.supportsPopover();

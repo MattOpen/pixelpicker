@@ -1,5 +1,5 @@
 /*!
- * pixelpicker v1.0.0 -- https://github.com/MattOpen/pixelpicker#readme
+ * pixelpicker v1.0.0 -- https://mattopen.github.io/pixelpicker/
  * Copyright (c) 2026 pixelquadrat GmbH
  * Copyright (c) 2021 Mohammed Bassit -- derived from Coloris (MIT)
  * Licensed under the MIT License.
