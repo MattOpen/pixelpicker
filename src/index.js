@@ -17,6 +17,7 @@ import { PickerInstance, THUMB_STYLES } from './instance.js';
 import { DEFAULTS, DEFAULT_SWATCHES, resolveOptions } from './options.js';
 import { supportsAnchorPositioning, supportsPopover } from './position.js';
 import {
+  contrastColor,
   formatColor,
   isValidColor,
   parseColor,
@@ -178,6 +179,7 @@ export {
   DEFAULT_SWATCHES,
   THUMB_STYLES,
   PickerInstance,
+  contrastColor,
   formatColor,
   isValidColor,
   parseColor,

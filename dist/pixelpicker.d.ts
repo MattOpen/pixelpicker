@@ -144,6 +144,11 @@ export declare function formatColor(
 ): string;
 export declare function rgbaToHex(rgba: Rgba, withAlpha?: boolean): string;
 export declare function rgbaToHsva(rgba: Rgba): Hsva;
+/**
+ * Schwarz oder Weiss -- was auf dieser Farbe lesbar bleibt.
+ * Schwelle nach WCAG-Relativhelligkeit.
+ */
+export declare function contrastColor(rgba: Rgba): '#000000' | '#ffffff';
 /** Unterstuetzt der Browser CSS Anchor Positioning? */
 export declare function supportsAnchorPositioning(): boolean;
 /** Unterstuetzt der Browser die Popover API? */

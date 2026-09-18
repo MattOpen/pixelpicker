@@ -1071,6 +1071,7 @@ export {
   THUMB_STYLES,
   auto,
   closeAll,
+  contrastColor,
   create,
   index_default as default,
   destroy,

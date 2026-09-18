@@ -218,6 +218,31 @@ Calling `create()` twice on the same field replaces the first instance instead o
 one on top. After `destroy()` a field is indistinguishable from one that never had a picker — no
 listeners, no wrapper, no leftover nodes.
 
+### Color helpers
+
+The functions the picker uses internally are exported too — useful when you do something with the
+chosen color elsewhere on the page.
+
+| Function | Returns | Meaning |
+|---|---|---|
+| `parseColor(value)` | `Rgba \| null` | Parse any CSS color — hex, `rgb()`, `hsl()` or a named color. `null` if it is not a color |
+| `formatColor(rgba, format, forceAlpha?)` | `string` | Write an `Rgba` back out as `'hex'`, `'rgb'` or `'hsl'` |
+| `contrastColor(rgba)` | `'#000000' \| '#ffffff'` | Black or white, whichever stays readable on that color. Uses the WCAG relative-luminance threshold |
+| `isValidColor(value)` | `boolean` | Whether a string parses as a color |
+| `rgbaToHex(rgba)` / `rgbaToHsva(rgba)` | `string` / `Hsva` | Conversions between the internal representations |
+
+```js
+import { parseColor, contrastColor } from 'pixelpicker';
+
+// Put the chosen color on a banner, with text that stays readable.
+field.addEventListener('pixelpicker:input', (event) => {
+  const rgba = parseColor(event.detail.value);
+  if (!rgba) return;
+  banner.style.background = event.detail.value;
+  banner.style.color = contrastColor(rgba);
+});
+```
+
 ## Keyboard
 
 | Key | Where | Action |

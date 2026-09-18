@@ -263,6 +263,65 @@
      mehrerer Karten auf einer Linie stehen, auch bei ungleich langem Text. */
   .card .card__demo { margin-top: auto; }
 
+  /* --- Karte, die ihre Farbe zeigt ---------------------------------------
+     Der Kopf der Karte nimmt die gewaehlte Farbe an -- genau das, was der
+     Picker im Einsatz tut: Man waehlt eine Farbe, und sie wirkt woanders.
+     Das Eingabefeld bleibt auf weissem Grund, sonst waeren helle Farben
+     nicht mehr von ihm zu unterscheiden. */
+  .card--tinted {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .card--tinted .card__head {
+    padding: 18px 18px 16px;
+    border-bottom: 1px solid var(--border);
+    /* Farbe und Schrift setzt das Skript je Auswahl. */
+    background: var(--card-tint, var(--surface));
+    color: var(--card-ink, inherit);
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .card--tinted .card__head h3,
+  .card--tinted .card__head p {
+    color: inherit;
+  }
+
+  /* Der Variantenname steht auf farbigem Grund: Er erbt die Schriftfarbe
+     und traegt einen Schleier davon als Hintergrund, statt der blauen
+     Auszeichnung aus dem Fliesstext -- die verschwindet auf Blau. */
+  .card--tinted .card__head h3 code {
+    background: color-mix(in srgb, currentcolor 15%, transparent);
+    color: inherit;
+  }
+
+  /* Der Beschreibungstext darf etwas zuruecktreten, aber lesbar bleiben --
+     deshalb Deckkraft statt einer zweiten Farbe, die zum Grund passen muss. */
+  .card--tinted .card__head p { opacity: 0.82; }
+
+  .card--tinted .card__demo {
+    padding: 16px 18px 18px;
+    background: var(--bg);
+  }
+
+  /* Der Seitenschalter sitzt im farbigen Kopf und muss beides vertragen:
+     hellen und dunklen Grund. Deshalb erbt er die Schriftfarbe. */
+  .card--tinted .side-switch {
+    border-color: color-mix(in srgb, currentcolor 28%, transparent);
+    background: color-mix(in srgb, currentcolor 10%, transparent);
+  }
+
+  .card--tinted .side-switch button { color: inherit; opacity: 0.75; }
+
+  /* Der gewaehlte Knopf kehrt die Farben um: Schriftfarbe als Grund, die
+     Kartenfarbe als Schrift. Beides liegt schon fest und ist gegeneinander
+     lesbar -- eine dritte Farbe waere geraten. */
+  .card--tinted .side-switch button[aria-pressed='true'] {
+    background: var(--card-ink, var(--accent));
+    color: var(--card-tint, #fff);
+    opacity: 1;
+  }
+
   /* Links/Rechts-Schalter je Karte: dieselbe Variante, andere Seite. */
   .side-switch {
     display: inline-flex;
@@ -433,7 +492,7 @@
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
-    margin-top: 16px;
+    margin: 16px 0 18px;
   }
 
   /* --- Der Beweis: abgeschnitten gegen Top Layer -------------------------- */
@@ -648,56 +707,68 @@
 <span class="fn">create</span>(field, { <span class="at">thumbStyle</span>: style, <span class="at">thumbPosition</span>: side });</code></pre>
 
 <div class="grid" id="thumb-grid">
-  <div class="card">
-    <h3><code>bar</code></h3>
-    <p>A strip at the edge of the field. The default.</p>
-    <div class="card__demo">
+  <div class="card card--tinted">
+    <div class="card__head">
+      <h3><code>bar</code></h3>
+      <p>A strip at the edge of the field. The default.</p>
       <div class="side-switch" role="group" aria-label="Thumb position for bar">
         <button type="button" data-side="start" aria-pressed="false">Start</button>
         <button type="button" data-side="end" aria-pressed="true">End</button>
       </div>
+    </div>
+    <div class="card__demo">
       <input type="text" class="demo-thumb" data-pp-thumb="bar" value="#4361ee">
     </div>
   </div>
-  <div class="card">
-    <h3><code>circle</code></h3>
-    <p>A round swatch inside the field.</p>
-    <div class="card__demo">
+  <div class="card card--tinted">
+    <div class="card__head">
+      <h3><code>circle</code></h3>
+      <p>A round swatch inside the field.</p>
       <div class="side-switch" role="group" aria-label="Thumb position for circle">
         <button type="button" data-side="start" aria-pressed="false">Start</button>
         <button type="button" data-side="end" aria-pressed="true">End</button>
       </div>
+    </div>
+    <div class="card__demo">
       <input type="text" class="demo-thumb" data-pp-thumb="circle" value="#06d6a0">
     </div>
   </div>
-  <div class="card">
-    <h3><code>square</code></h3>
-    <p>A square swatch inside the field.</p>
-    <div class="card__demo">
+  <div class="card card--tinted">
+    <div class="card__head">
+      <h3><code>square</code></h3>
+      <p>A square swatch inside the field.</p>
       <div class="side-switch" role="group" aria-label="Thumb position for square">
         <button type="button" data-side="start" aria-pressed="false">Start</button>
         <button type="button" data-side="end" aria-pressed="true">End</button>
       </div>
+    </div>
+    <div class="card__demo">
       <input type="text" class="demo-thumb" data-pp-thumb="square" value="#ffbe0b">
     </div>
   </div>
-  <div class="card">
-    <h3><code>fill</code></h3>
-    <p>The color covers the field completely — the value is hidden. For fields where the color <em>is</em> the display.</p>
+  <div class="card card--tinted">
+    <div class="card__head">
+      <h3><code>fill</code></h3>
+      <p>The color covers the field completely — the value is hidden. For fields where the color <em>is</em> the display.</p>
+    </div>
     <div class="card__demo">
       <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#fb5607">
     </div>
   </div>
-  <div class="card">
-    <h3><code>fill-behind</code></h3>
-    <p>The color fills the field <em>behind</em> the text, so the value stays readable.</p>
+  <div class="card card--tinted">
+    <div class="card__head">
+      <h3><code>fill-behind</code></h3>
+      <p>The color fills the field <em>behind</em> the text, so the value stays readable.</p>
+    </div>
     <div class="card__demo">
       <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#4cc9f0">
     </div>
   </div>
-  <div class="card">
-    <h3><code>none</code></h3>
-    <p>No swatch at all — the input is left exactly as it was.</p>
+  <div class="card card--tinted">
+    <div class="card__head">
+      <h3><code>none</code></h3>
+      <p>No swatch at all — the input is left exactly as it was.</p>
+    </div>
     <div class="card__demo">
       <input type="text" class="demo-thumb" data-pp-thumb="none" value="#f72585">
     </div>
@@ -1230,7 +1301,31 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
   });
 
   // --- 2 · Thumb styles ----------------------------------------------------
-  PixelPicker.create('.demo-thumb');
+  // Der Kopf jeder Karte nimmt die gewaehlte Farbe an. Das ist der Zweck des
+  // Pickers im Kleinen: Man waehlt eine Farbe, und sie wirkt an anderer
+  // Stelle. Die Schriftfarbe rechnet das Paket selbst aus -- dieselbe
+  // Funktion, die auch thumbStyle 'fill' benutzt.
+  const tintCard = (field) => {
+    const card = field.closest('.card--tinted');
+    if (!card) return;
+
+    const rgba = PixelPicker.parseColor(field.value);
+    if (!rgba) {
+      card.style.removeProperty('--card-tint');
+      card.style.removeProperty('--card-ink');
+      return;
+    }
+
+    card.style.setProperty('--card-tint', PixelPicker.formatColor(rgba, 'rgb', true));
+    card.style.setProperty('--card-ink', PixelPicker.contrastColor(rgba));
+  };
+
+  PixelPicker.create('.demo-thumb', {
+    onInput: (value, instance) => tintCard(instance.field)
+  });
+
+  // Startzustand: die Farbe, die im Markup steht.
+  document.querySelectorAll('.demo-thumb').forEach(tintCard);
 
   // Der Seitenschalter je Karte. Die Seite ist beim Anlegen festgelegt,
   // deshalb wird die Instanz neu gebaut statt umgestellt -- genau der Weg,

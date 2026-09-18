@@ -32,6 +32,7 @@ var PixelPicker = (() => {
     THUMB_STYLES: () => THUMB_STYLES,
     auto: () => auto,
     closeAll: () => closeAll,
+    contrastColor: () => contrastColor,
     create: () => create,
     default: () => index_default,
     destroy: () => destroy,
