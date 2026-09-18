@@ -599,34 +599,32 @@
    Der Text bleibt lesbar, weil die Schriftfarbe gegen die Hintergrundfarbe
    gerechnet wird (contrastColor in color.js). */
 
-/* Kein Platz fuer ein Farbfeld noetig -- die Farbe liegt im Feld selbst.
-   Der Innenabstand bleibt aber der uebliche, sonst klebt der Text am Rand. */
+/* fill deckt das Feld vollstaendig ab: Das Farbfeld liegt ueber dem Input,
+   der Text ist nicht mehr zu sehen. Gedacht fuer Felder, bei denen die Farbe
+   selbst die Anzeige ist -- der Wert steht dann woanders oder gar nicht.
+   Wer die Farbe UND den Text will, nimmt fill-behind. */
 .pp-field--fill {
   --pp-thumb-space: 10px;
 }
 
 /* Die Doppelung der Klasse hebt die Spezifitaet an. Ohne sie gewinnt eine
    spaeter geladene Projektregel wie `input[type="text"] { background: … }`,
-   und das Feld bleibt farblos -- der Stil tut dann sichtbar nichts. */
+   und der Stil taete sichtbar nichts. */
 .pp-field--fill.pp-field--fill input {
   position: relative;
-  z-index: 1;
-  background-color: var(--pp-thumb-color, transparent);
+  z-index: 0;
+  background-color: transparent;
   background-image: none;
-  color: var(--pp-thumb-contrast, inherit);
-  transition: background-color var(--pp-transition), color var(--pp-transition);
 }
 
-.pp-field--fill input::placeholder {
-  color: var(--pp-thumb-contrast, inherit);
-  opacity: 0.65;
-}
-
+/* Das Farbfeld liegt ueber dem Text und deckt ihn ab. Es bleibt anklickbar,
+   damit das Panel weiterhin ueber einen Klick ins Feld aufgeht. */
 .pp-field--fill .pp-thumb {
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   border-radius: inherit;
-  background: transparent;
+  background: var(--pp-thumb-color, transparent);
+  transition: background-color var(--pp-transition);
 }
 
 /* --- fill-behind: Farbe hinter dem Feld ---------------------------------- */

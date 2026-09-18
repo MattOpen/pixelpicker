@@ -75,8 +75,8 @@ Six ways to show the selected color in the field, chosen with `thumbStyle`:
 | `bar` | A strip at the end of the field. The default |
 | `circle` | A round swatch inside the field |
 | `square` | A square swatch inside the field |
-| `fill` | The whole field takes the color; text contrast is computed |
-| `fill-behind` | Color behind the text, field background transparent |
+| `fill` | The color covers the field completely and hides the value — for fields where the color *is* the display |
+| `fill-behind` | The color fills the field behind the text, so the value stays readable |
 | `none` | No swatch — the field is left untouched |
 
 `thumbPosition: 'start'` moves the swatch to the other side. It follows the writing direction, so

@@ -523,21 +523,16 @@
 }
 .pp-field--fill.pp-field--fill input {
   position: relative;
-  z-index: 1;
-  background-color: var(--pp-thumb-color, transparent);
+  z-index: 0;
+  background-color: transparent;
   background-image: none;
-  color: var(--pp-thumb-contrast, inherit);
-  transition: background-color var(--pp-transition), color var(--pp-transition);
-}
-.pp-field--fill input::placeholder {
-  color: var(--pp-thumb-contrast, inherit);
-  opacity: 0.65;
 }
 .pp-field--fill .pp-thumb {
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   border-radius: inherit;
-  background: transparent;
+  background: var(--pp-thumb-color, transparent);
+  transition: background-color var(--pp-transition);
 }
 .pp-field--fill-behind {
   --pp-thumb-space: 10px;

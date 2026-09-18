@@ -10,7 +10,7 @@
 <meta property="og:title" content="pixelpicker — dependency-free color picker">
 <meta property="og:description" content="A dependency-free color picker for text inputs. The panel is a helper, never a replacement for the input field.">
 <meta property="og:url" content="https://mattopen.github.io/pixelpicker/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%232a9d8f'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%234361ee'/></svg>">
 <link rel="stylesheet" href="assets/pixelpicker.css">
 <style>
   :root {
@@ -19,20 +19,21 @@
     --border: #e1e4e9;
     --text: #1d2129;
     --muted: #6b7280;
-    --accent: #0a9396;
+    --accent: #4361ee;
     --code-bg: #f2f4f7;
     --radius: 10px;
 
     /* Die knallige Palette. Sie traegt den Hero und die Bubbles -- bei einem
-       Colorpicker ist Farbe kein Schmuck, sondern das Thema selbst. */
-    --pop-pink: #ef476f;
-    --pop-yellow: #ffd166;
-    --pop-green: #06d6a0;
-    --pop-blue: #118ab2;
-    --pop-orange: #ff6b35;
-    --pop-cyan: #00b4d8;
+       Colorpicker ist Farbe kein Schmuck, sondern das Thema selbst.
+       Gewaehlt von Matt am 2026-09-18 aus zwei Vorschlaegen. */
+    --pop-pink: #f72585;
+    --pop-yellow: #ffbe0b;
+    --pop-green: #4cc9f0;
+    --pop-blue: #4361ee;
+    --pop-orange: #fb5607;
+    --pop-cyan: #b5179e;
     --pop-violet: #7209b7;
-    --pop-deep: #073b4c;
+    --pop-deep: #3a0ca3;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -126,10 +127,10 @@
     margin: 0 -16px 48px;
     padding: 72px 16px 80px;
     background:
-      radial-gradient(circle at 15% 20%, #e8fbf5 0%, transparent 55%),
-      radial-gradient(circle at 85% 15%, #fff4e0 0%, transparent 50%),
-      radial-gradient(circle at 70% 90%, #e6f6fd 0%, transparent 55%),
-      #fdfdfc;
+      radial-gradient(circle at 15% 20%, #ffe9f3 0%, transparent 55%),
+      radial-gradient(circle at 85% 15%, #fff1d6 0%, transparent 50%),
+      radial-gradient(circle at 70% 90%, #ebe6ff 0%, transparent 55%),
+      #fffdfb;
     text-align: center;
   }
 
@@ -154,7 +155,7 @@
     font-size: clamp(2.4rem, 8vw, 4rem);
     letter-spacing: -0.035em;
     font-weight: 800;
-    background: linear-gradient(100deg, #0aa8b0 0%, var(--pop-green) 38%, var(--pop-blue) 68%, var(--pop-violet) 100%);
+    background: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -188,7 +189,7 @@
     backdrop-filter: blur(4px);
   }
 
-  .badge--ok { border-color: var(--pop-green); color: #04795b; }
+  .badge--ok { border-color: #4361ee; color: #2f49c9; }
 
   .cta { position: relative; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 
@@ -204,12 +205,12 @@
   .cta a:hover { transform: translateY(-1px); }
 
   .cta__primary {
-    background: linear-gradient(135deg, var(--pop-green), #05b386);
-    color: #04372b;
-    box-shadow: 0 4px 14px rgb(6 214 160 / 35%);
+    background: linear-gradient(135deg, #4361ee, #7209b7);
+    color: #fff;
+    box-shadow: 0 4px 14px rgb(67 97 238 / 38%);
   }
 
-  .cta__primary:hover { box-shadow: 0 6px 20px rgb(6 214 160 / 45%); }
+  .cta__primary:hover { box-shadow: 0 6px 20px rgb(67 97 238 / 48%); }
 
   .cta__ghost {
     border: 1px solid color-mix(in srgb, var(--pop-deep) 18%, transparent);
@@ -452,84 +453,9 @@
     :root:not([data-theme='light']) .hero { color-scheme: light; }
   }
 
-  /* --- Farbvariante 2 zum Vergleich --------------------------------------
-     Waermer und satter als Variante 1: Koralle, Bernstein und Violett statt
-     Mint und Tuerkis. Der Umschalter unten rechts setzt data-palette="warm".
-     Nach der Entscheidung faellt die unterlegene Variante ersatzlos weg. */
-  :root[data-palette='warm'] {
-    --pop-pink: #f72585;
-    --pop-yellow: #ffbe0b;
-    --pop-green: #4cc9f0;
-    --pop-blue: #4361ee;
-    --pop-orange: #fb5607;
-    --pop-cyan: #b5179e;
-    --pop-violet: #7209b7;
-    --pop-deep: #3a0ca3;
-    --accent: #4361ee;
-  }
-
-  :root[data-palette='warm'] .hero {
-    background:
-      radial-gradient(circle at 15% 20%, #ffe9f3 0%, transparent 55%),
-      radial-gradient(circle at 85% 15%, #fff1d6 0%, transparent 50%),
-      radial-gradient(circle at 70% 90%, #ebe6ff 0%, transparent 55%),
-      #fffdfb;
-  }
-
-  :root[data-palette='warm'] h1 {
-    background: linear-gradient(100deg, #4361ee 0%, #7209b7 40%, #f72585 72%, #fb5607 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-
-  :root[data-palette='warm'] .cta__primary {
-    background: linear-gradient(135deg, #4361ee, #7209b7);
-    color: #fff;
-    box-shadow: 0 4px 14px rgb(67 97 238 / 38%);
-  }
-
-  :root[data-palette='warm'] .badge--ok { border-color: #4361ee; color: #2f49c9; }
-
-  /* Der Umschalter selbst -- er verschwindet mit der Entscheidung. */
-  .palette-switch {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 60;
-    display: flex;
-    gap: 6px;
-    padding: 7px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--bg) 92%, transparent);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
-  }
-
-  .palette-switch button {
-    padding: 6px 13px;
-    border: none;
-    border-radius: 999px;
-    background: none;
-    color: var(--muted);
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .palette-switch button[aria-pressed='true'] {
-    background: var(--accent);
-    color: #fff;
-  }
 </style>
 </head>
 <body>
-
-<div class="palette-switch" role="group" aria-label="Color palette">
-  <button type="button" data-palette="cool" aria-pressed="true">Version 1</button>
-  <button type="button" data-palette="warm" aria-pressed="false">Version 2</button>
-</div>
 
 <nav class="topbar">
   <span class="topbar__brand">
@@ -645,12 +571,12 @@
   </div>
   <div class="card">
     <h3><code>fill</code></h3>
-    <p>The whole field takes the color. Text contrast is computed.</p>
+    <p>The color covers the field completely — the value is hidden. For fields where the color <em>is</em> the display.</p>
     <input type="text" class="demo-thumb" data-pp-thumb="fill" value="#e76f51">
   </div>
   <div class="card">
     <h3><code>fill-behind</code></h3>
-    <p>Color behind the text, field background transparent.</p>
+    <p>The color fills the field <em>behind</em> the text, so the value stays readable.</p>
     <input type="text" class="demo-thumb" data-pp-thumb="fill-behind" value="#48cae4">
   </div>
   <div class="card">
@@ -970,17 +896,6 @@ picker.<span class="fn">destroy</span>();              <span class="cm">// diese
       `left:${b.x}%;top:${b.y}%;width:${b.size}px;height:${b.size}px;` +
       `background:${b.color};opacity:${b.alpha};transform:translate(-50%,-50%)`;
     bubbleHost.appendChild(el);
-  }
-
-  // --- Farbvariante umschalten (nur zum Vergleich, faellt danach weg) ------
-  for (const btn of document.querySelectorAll('.palette-switch button')) {
-    btn.addEventListener('click', () => {
-      const warm = btn.dataset.palette === 'warm';
-      document.documentElement.dataset.palette = warm ? 'warm' : 'cool';
-      for (const other of document.querySelectorAll('.palette-switch button')) {
-        other.setAttribute('aria-pressed', String(other === btn));
-      }
-    });
   }
 
   // --- Reiter und Aufsetzcode ----------------------------------------------
