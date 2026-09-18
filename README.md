@@ -253,8 +253,10 @@ npm run watch     # rebuild on change
 npm run demo      # build and serve the example page on :8080
 ```
 
-The example page under [`demo/`](demo/index.html) shows every option and both positioning paths,
-including a switch that forces the JavaScript fallback.
+The example page under [`docs/`](docs/index.html) shows every option and both positioning paths,
+including a switch that forces the JavaScript fallback. It is also the published page at
+**https://mattopen.github.io/pixelpicker/** — `docs/` is the GitHub Pages source, so editing that
+file changes the live site.
 
 ## License
 

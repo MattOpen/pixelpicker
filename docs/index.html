@@ -3,9 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pixelpicker</title>
+<title>pixelpicker — dependency-free color picker</title>
+<meta name="description" content="A dependency-free color picker for text inputs. Uses the Popover API and CSS Anchor Positioning, with a JavaScript fallback. MIT licensed.">
+<link rel="canonical" href="https://mattopen.github.io/pixelpicker/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="pixelpicker — dependency-free color picker">
+<meta property="og:description" content="A dependency-free color picker for text inputs. The panel is a helper, never a replacement for the input field.">
+<meta property="og:url" content="https://mattopen.github.io/pixelpicker/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%232a9d8f'/></svg>">
-<link rel="stylesheet" href="../dist/pixelpicker.css">
+<link rel="stylesheet" href="assets/pixelpicker.css">
 <style>
   :root {
     --bg: #ffffff;
@@ -527,13 +533,14 @@
 </table>
 
 <footer>
+  <p><a href="https://github.com/MattOpen/pixelpicker">Source on GitHub</a> · <a href="https://www.npmjs.com/package/pixelpicker">Package on npm</a> · <a href="https://github.com/MattOpen/pixelpicker#readme">Documentation</a></p>
   <p><strong>pixelpicker</strong> — MIT licensed. Derived from <a href="https://github.com/mdbassit/Coloris">Coloris</a> by Mohammed Bassit, also MIT.</p>
   <p>Built by <a href="https://www.pixelquadrat.com/">pixelquadrat GmbH</a>.</p>
 </footer>
 
 </div>
 
-<script src="../dist/pixelpicker.js"></script>
+<script src="assets/pixelpicker.js"></script>
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);

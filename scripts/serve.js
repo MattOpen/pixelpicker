@@ -32,7 +32,7 @@ const TYPES = {
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, `http://localhost:${port}`);
   let pathname = decodeURIComponent(url.pathname);
-  if (pathname === '/') pathname = '/demo/index.html';
+  if (pathname === '/') pathname = '/docs/index.html';
 
   // Ausbrechen aus dem Projektverzeichnis verhindern.
   const target = join(root, normalize(pathname).replace(/^(\.\.[/\\])+/, ''));

@@ -8,7 +8,7 @@
  * window.PixelPicker und laesst sich per <script> einbinden.
  */
 
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
@@ -91,6 +91,23 @@ async function copyTypes() {
   await writeFile(join(outdir, 'pixelpicker.d.ts'), types);
 }
 
+/**
+ * Die Beispielseite mit ihren eigenen Kopien versorgen.
+ *
+ * docs/ ist die Quelle von GitHub Pages und dort die Wurzel der Website --
+ * ein ../dist/ aus der Seite heraus fuehrt ins Nichts. Die Dateien werden
+ * deshalb gespiegelt statt verlinkt, und zwar beim Bauen: Eine Kopie, die
+ * man von Hand pflegt, laeuft irgendwann auseinander.
+ */
+async function copyToDocs() {
+  const docsAssets = join(root, 'docs/assets');
+  await mkdir(docsAssets, { recursive: true });
+
+  for (const file of ['pixelpicker.js', 'pixelpicker.css']) {
+    await copyFile(join(outdir, file), join(docsAssets, file));
+  }
+}
+
 async function run() {
   await mkdir(outdir, { recursive: true });
 
@@ -100,13 +117,15 @@ async function run() {
     const contexts = await Promise.all(configs.map((config) => esbuild.context(config)));
     await Promise.all(contexts.map((context) => context.watch()));
     await copyTypes();
+    await copyToDocs();
     console.log('pixelpicker: watching for changes...');
     return;
   }
 
   await Promise.all(configs.map((config) => esbuild.build(config)));
   await copyTypes();
-  console.log(`pixelpicker v${pkg.version}: build complete -> dist/`);
+  await copyToDocs();
+  console.log(`pixelpicker v${pkg.version}: build complete -> dist/, docs/assets/`);
 }
 
 run().catch((error) => {
