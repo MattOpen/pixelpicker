@@ -501,14 +501,17 @@
   display: block;
 }
 
-.pp-field input {
-  /* Platz fuer das Farbfeld -- der Wert wird je Variante gesetzt. */
+/* Platz fuer das Farbfeld -- der Wert wird je Variante gesetzt.
+   Die Klasse steht doppelt, damit eine spaeter geladene Projektregel wie
+   `input[type="text"] { padding: 0 10px }` den Platz nicht wieder einzieht:
+   Das Farbfeld laege sonst auf dem Text. */
+.pp-field.pp-field input {
   padding-inline-end: var(--pp-thumb-space, 0);
 }
 
-.pp-field--thumb-start input {
+.pp-field--thumb-start.pp-field--thumb-start input {
   padding-inline-start: var(--pp-thumb-space, 0);
-  padding-inline-end: revert;
+  padding-inline-end: 10px;
 }
 
 .pp-thumb {
@@ -596,14 +599,20 @@
    Der Text bleibt lesbar, weil die Schriftfarbe gegen die Hintergrundfarbe
    gerechnet wird (contrastColor in color.js). */
 
+/* Kein Platz fuer ein Farbfeld noetig -- die Farbe liegt im Feld selbst.
+   Der Innenabstand bleibt aber der uebliche, sonst klebt der Text am Rand. */
 .pp-field--fill {
-  --pp-thumb-space: 0;
+  --pp-thumb-space: 10px;
 }
 
-.pp-field--fill input {
+/* Die Doppelung der Klasse hebt die Spezifitaet an. Ohne sie gewinnt eine
+   spaeter geladene Projektregel wie `input[type="text"] { background: … }`,
+   und das Feld bleibt farblos -- der Stil tut dann sichtbar nichts. */
+.pp-field--fill.pp-field--fill input {
   position: relative;
   z-index: 1;
   background-color: var(--pp-thumb-color, transparent);
+  background-image: none;
   color: var(--pp-thumb-contrast, inherit);
   transition: background-color var(--pp-transition), color var(--pp-transition);
 }
@@ -623,13 +632,16 @@
 /* --- fill-behind: Farbe hinter dem Feld ---------------------------------- */
 
 .pp-field--fill-behind {
-  --pp-thumb-space: 0;
+  --pp-thumb-space: 10px;
 }
 
-.pp-field--fill-behind input {
+/* Ebenso hier: Bleibt der Feldhintergrund deckend, verdeckt er die Farbe,
+   die hinter ihm liegt. */
+.pp-field--fill-behind.pp-field--fill-behind input {
   position: relative;
   z-index: 1;
   background-color: transparent;
+  background-image: none;
 }
 
 .pp-field--fill-behind .pp-thumb {
